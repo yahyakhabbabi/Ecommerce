@@ -12,6 +12,7 @@ const productSchema = new mongoose.Schema({
     discount_price:{type: Number},
     options:{type: Blob,Array},
     active:{type:Boolean}
+    
 }
 )
 
