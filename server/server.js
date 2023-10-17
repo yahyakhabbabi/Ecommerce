@@ -1,28 +1,26 @@
 //importation des packages npm
 require('dotenv').config();
 const express = require('express');
-const bodyparser = require('body-parser')
+const mongoose = require('mongoose');
 const app = express();
+const connect = require('../server/config/database');
+const {PORT} = require('../server/config/env')
 
-
-//importation des routes
 
 //declaration des variables
-const PORT = process.env.PORT || 3000;
-
-//app.use for des building package npm
-app.use(bodyparser.json());
-app.use(bodyparser.urlencoded({extended:false}))
+const port = PORT || 3000;
 
 
-//app.use for routes 
+connect()
 
 
 
+mongoose.connection.once('open',()=>{
+  console.log('connected to Mongodb');
+  app.listen(port, () => console.log(`Server running on port ${port}`));
 
-app.listen(PORT,()=>{
-  console.log('listening in port',PORT);
 })
+
 
 
 
