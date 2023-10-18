@@ -6,11 +6,11 @@ const productSchema = new mongoose.Schema({
     product_image:{type: String},
     product_name:{type: String},
     subcategory_id:{type: String},
-    short_description:{type: Text},
-    long_description:{type: Text},
+    short_description:{type: String},
+    long_description:{type: String},
     price:{type: Number},
     discount_price:{type: Number},
-    options:{type: Blob,Array},
+    options:{type: Array},
     active:{type:Boolean}
     
 }

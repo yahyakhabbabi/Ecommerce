@@ -30,7 +30,7 @@ exports.addUsers = async function(req,res){
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const user = new Users({
-            username,
+            userName,
             password: hashedPassword,
             firstName,
             lastName,
@@ -44,7 +44,7 @@ exports.addUsers = async function(req,res){
         if (result) {
             return res.status(201).json({ msg: "user created successfully" });
         } else {
-            return res.status(500).json({ error: "Unable to save user" });
+            return res.status(403).json({ error: "you don't have enough privilege" });
         }
     }catch(error){
         res.status(500).send(error)

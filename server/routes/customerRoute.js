@@ -8,7 +8,7 @@ router.post('/login',customerController.login);
 router.post('/',customerController.createCustomer);
 router.get('/',customerController.getAllCustomer);
 router.get('/',customerController.searchCustomer);
-router.get('/:id',customerController,getCustomerById);
+router.get('/:id',customerController.getCustomerById);
 router.put('/validate/:id',customerController.validateCustomer);
 router.put('/:id',customerController.updateCustomer);
 router.delete('/delete',customerController.deleteCustomer);

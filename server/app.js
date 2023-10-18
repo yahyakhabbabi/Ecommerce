@@ -1,4 +1,5 @@
 //importation des packages npm
+require('dotenv').config();
 const express = require('express');
 const bodyparser = require('body-parser')
 const app = express();
@@ -26,3 +27,6 @@ app.use('/v1/categories',categorieRoute);
 app.use('/v1/subcategories',subcategorieRoute);
 app.use('/v1/products',productRoute);
 app.use('/v1/orders',orderRoute);
+
+
+module.exports=app;
