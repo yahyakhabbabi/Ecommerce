@@ -1,15 +1,21 @@
-const categorie = require('../models/Categorie');
+const {categorie} = require('../models/Categorie');
 
 
 
 
 exports.creatCategorie = async function (req,res){
-   const {categorieName} = req.body;
+   const {category_name} = req.body;
    try{
-    const {categorie} = await categorie.create({categorieName})
-    res.status(201).json({ message: 'category created successfully' });
+    await categorie.create({category_name})
+    const categories = categorie.findOne({category_name});
+    if(!categories){
+    res.status(400).json({message: "the category xxxxx already exist"})
+    };
+    res.status(201).json({ message: 'category created successfully' })
+    ;
    } catch (error) {
-    res.status(400).json({message: "the category xxxxx already exist"});
+    res.status(500).send(error)
+   
    }
    
     
