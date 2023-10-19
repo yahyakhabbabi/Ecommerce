@@ -42,7 +42,7 @@ exports.idCategories = async function (req, res) {
 
         res.status(200).send(category);
     } catch (error) {
-        res.status(500).json({ message: "Internal server error" });
+        res.status(500).send({ message: "Internal server error" });
     }
 }
 
