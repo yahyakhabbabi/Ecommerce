@@ -61,23 +61,24 @@ exports.searchCategories = async function (req,res){
 
 }
 
+
 exports.idCategories = async function (req,res){
     try {
         const { id } = req.params;
+        const category = await categorie.findById(id);
 
-    const categorie = await Categorie.findById(id)
 
-    if (!categorie){
+    if (!category){
         return res.status(404).send({message: "category not found"})
     }
-    res.status(200).send(categorie);
+    res.status(200).send(category);
         
     } catch (error) {
         res.status(500).send(error)
     }
     
-
 }
+
 
 exports.updateCategories = async function (req,res){
     const categorieId = req.params.id;
