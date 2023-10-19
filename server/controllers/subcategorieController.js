@@ -1,4 +1,4 @@
-const categorie = require('../models/Subcategorie');
+const {subcategorie} = require('../models/Subcategorie');
 
 
 
