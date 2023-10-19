@@ -2,7 +2,6 @@ const {categorie} = require('../models/Categorie');
 
 
 
-
 exports.creatCategorie = async function (req,res){
    const {category_name} = req.body;
    try{
@@ -84,9 +83,9 @@ exports.updateCategories = async function (req,res){
     const { categorie_name, active } = req.body;
 
     try {
-      const Category = await categorie.findById(categoryId);
+      const Categorie = await categorie.findById(categoryId);
 
-      if (!category) {
+      if (!categorie) {
         return res.status(404).send({ status: 404, message: 'Invalid category id' });
       }
 
