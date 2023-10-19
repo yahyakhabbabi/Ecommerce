@@ -16,6 +16,7 @@ const orderRoute = require('../server/routes/orderRoute');
 
 
 //app.use for des building package npm
+app.use(express.json())
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({extended:false}))
 
