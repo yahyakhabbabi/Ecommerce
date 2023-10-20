@@ -1,6 +1,6 @@
 const { categorie } = require("../models/Categorie");
 
-<<<<<<< HEAD
+
 
 
 exports.creatCategorie = async function (req,res){
@@ -69,7 +69,7 @@ exports.idCategories = async function (req,res){
 
     if (!categorie){
         return res.status(404).send({message: "category not found"})
-=======
+
 exports.creatCategorie = async function (req, res) {
   const { category_name } = req.body;
   try {
@@ -79,7 +79,7 @@ exports.creatCategorie = async function (req, res) {
       res
         .status(400)
         .json({ message: `the category ${category_name} already exist` });
->>>>>>> 3779bd509c3586bf952552a1a561367db5b388d4
+
     }
     res.status(201).send({ message: "category created successfully" });
   } catch (error) {
@@ -140,36 +140,16 @@ exports.updateCategories = async function (req, res) {
     const { category_name, active } = req.body;
     const category = await categorie.findById(id);
 
-<<<<<<< HEAD
-exports.updateCategories = async function (req,res){
-    const categorieId = req.params.id;
-    const { categorie_name, active } = req.body;
+exports.updateCategories = async function (req, res) {
+  try {
+    const { id } = req.params;
+    const { category_name, active } = req.body;
+    const category = await categorie.findById(id);
 
-    try {
-      const Categorie = await categorie.findById(categoryId);
-
-      if (!categorie) {
-        return res.status(404).send({ status: 404, message: 'Invalid category id' });
-      }
-
-      const checkUserName = await categorie.findOne({_id:categorieId,categorieName:req.body.categorie_name})
-      if(checkUserName) {
-        res.status(400).send('user name already exist')
-      }
-
-      await categorie.updateOne({_id:categorieId},{category_name, active });
-
-      
-
-      res.status(200).send({ status: 200, message: 'Category updated successfully' });
-    } catch (error) {
-      res.status(500).send({ status: 500, message: 'Internal server error' });
-=======
     if (!category) {
       return res
         .status(404)
         .send({ status: 404, message: "ID de catégorie invalide" });
->>>>>>> 3779bd509c3586bf952552a1a561367db5b388d4
     }
 
     const checkCategoryName = await categorie.findOne({
@@ -194,6 +174,7 @@ exports.updateCategories = async function (req,res){
     res.status(500).send({ status: 500, message: "Erreur interne du serveur" });
   }
 };
+
 
 exports.deleteCategories = async function (req, res) {
   const categoryId = req.params.id;

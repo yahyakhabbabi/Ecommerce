@@ -1,17 +1,17 @@
 const nodemailer = require('nodemailer');
+const {MYEmail,Mypassword} = require('../config/env')
 
 function sendEmail(to, subject, text) {
     const transporter = nodemailer.createTransport({
-        // Configure your email service here (e.g., Gmail, SMTP, etc.)
         service: 'Gmail',
         auth: {
-            user: 'your_email@gmail.com',
-            pass: 'your_email_password',
+            user: MYEmail,
+            pass: Mypassword,
         },
     });
 
     const mailOptions = {
-        from: 'your_email@gmail.com',
+        from: MYEmail,
         to: to,
         subject: subject,
         text: text,
@@ -26,4 +26,4 @@ function sendEmail(to, subject, text) {
     });
 }
 
-module.exports = { sendEmail };
+module.exports =  {sendEmail} ;
