@@ -1,5 +1,5 @@
 //importation des packages npm
-require('dotenv').config('');
+
 const mongoose = require('mongoose');
 const app = require('./app')
 const connect = require('../server/config/database');
