@@ -34,7 +34,7 @@ const verifyJWTCustomer = (req, res, next) => {
 }
 
 const checkRole = (req, res, next) => {
-    console.log(req.role);
+  
     if (req.role !== "Admin") {
         return res.status(403).send('Access denied: Should be an admin');
     }
