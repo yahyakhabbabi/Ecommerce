@@ -7,14 +7,15 @@ const {verifyJWT,checkRole} = require('../middelware/authMiddleware')
 
 router.post('/login',userController.login);
 router.post('/',verifyJWT,checkRole,userController.addUsers);
-router.get('/',verifyJWT,userController.allUsers);
+
 router.get('/',(req,res,next)=>{
-    if(Object.keys(req.query).length>0){
+    if(Object.keys(req.query).length>2){
         userController.SearchUser(req, res, next);
     }else{
-        userController.usersById(req, res, next);
+        userController.allUsers(req, res, next);
     }
 });
+router.get('/:id', userController.usersById);
 router.put('/:id',userController.UpdateUser);
 router.delete('/:id',userController.DeleteUser);
 

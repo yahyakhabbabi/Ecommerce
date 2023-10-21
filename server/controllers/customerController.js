@@ -238,8 +238,8 @@ exports.customerProfile = async function (req,res){
   }
 
 }
-exports.updateDataCustomer = async function (req,res){
-  try{
+exports.updateDataCustomer = async function (req, res) {
+  try {
     const { id } = req.customer;
     if (id) {
       const body = req.body;
@@ -248,11 +248,16 @@ exports.updateDataCustomer = async function (req,res){
       if (!customer) {
         return res.status(404).send('User not found');
       }
-      const existingEmail=Customers.findOne({ _id: id, email: body.email })   
-      if (existingEmail) {
-        return res.status(400).send({ error: "Email already exists" });
-      }
-      await Customers.updateOne({ _id: id }, { $set: body });
+
+     
+        const existingEmail = await Customers.findOne({ _id: id, email: body.email });
+        if (existingEmail) {
+          return res.status(400).send({ error: "Email already exists" });
+        }
+     
+
+   
+      await Customers.updateOne({ _id: id }, { $set: { ...body, _id: id } });
 
       res.status(200).send('User updated successfully');
     } else {
@@ -261,5 +266,4 @@ exports.updateDataCustomer = async function (req,res){
   } catch (error) {
     res.status(500).send(error);
   }
-
 }

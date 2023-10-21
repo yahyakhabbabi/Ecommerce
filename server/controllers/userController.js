@@ -78,10 +78,7 @@ exports.addUsers = async function(req,res){
             email,
             role
         });
-
-       
-       
-        
+        const result = await user.save();
         const emailText = `Dear ${firstName} ${lastName},\n\nWelcome to Our App!\n\nYour username: ${user_name}\nYour password: ${password}\n\nThank you for joining us!`;
 
         emailSender.sendEmail(email, 'Welcome to Our App', emailText);
@@ -197,12 +194,12 @@ exports.SearchUser = async function (req, res) {
         body.updatedAt = new Date();
         await Users.updateOne({ _id: id }, { $set: body });
   
-        res.status(200).send('User updated successfully');
+        res.status(200).json('User updated successfully');
       } else {
-        res.status(404).send('User not found');
+        res.status(404).json('User not found');
       }
     } catch (error) {
-      res.status(500).send(error);
+      res.status(500).json(error);
     }
   }
   
@@ -213,14 +210,14 @@ exports.DeleteUser = async function (req, res) {
       const user = await Users.findOne({ _id: id });
   
       if (!user) {
-        return res.status(404).send('User not found');
+        return res.status(404).json('User not found');
       }
   
       await user.deleteOne();
   
-      return res.status(200).send('User deleted successfully');
+      return res.status(200).json('User deleted successfully');
     } catch (error) {
-      return res.status(500).send(error);
+      return res.status(500).json(error);
     }
   }
   
