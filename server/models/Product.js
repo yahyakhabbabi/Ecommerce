@@ -4,7 +4,7 @@ const productSchema = new mongoose.Schema({
     sku:{type: String},
     product_image:{type: String},
     product_name:{type: String},
-    subcategory_id:{type: String},
+    subcategory_id:{ type: mongoose.Schema.Types.ObjectId, ref: 'Subcategorie' },
     short_description:{type: String},
     long_description:{type: String},
     price:{type: Number},
