@@ -3,72 +3,6 @@ const { categorie } = require("../models/Categorie");
 
 
 
-exports.creatCategorie = async function (req,res){
-   const {category_name} = req.body;
-   try{
-    await categorie.create({category_name})
-    const categories = categorie.findOne({category_name});
-    if(!categories){
-    res.status(400).json({message: `the category ${category_name} already exist`})
-    };
-    res.status(201).send({ message: 'category created successfully' })
-    ;
-   } catch (error) {
-    res.status(500).send(error)
-   
-   }
-   
-    
-}
-
-exports.listCategories = async function (req,res){
-    try {
-        const page = parseInt(req.query.page) || 1;
-        const perPage = 10;
-        const startIndex = (page - 1) * perPage;
-  
-        const categories = await categorie.find()
-          .skip(startIndex)
-          .limit(perPage);
-  
-        res.status(200).send(categories);
-      } catch (error) {
-        res.status(500).send({ error: 'Server error' });
-      }
-    
-    
-}
-
-exports.searchCategories = async function (req,res){
-    try {
-        const query = req.query.query || '';
-        const page = parseInt(req.query.page) || 1;
-        const perPage = 10;
-        const startIndex = (page - 1) * perPage;
-  
-        const regex = new RegExp(query, 'i');
-        const categories = await categorie.find({ category_name: regex })
-          .skip(startIndex)
-          .limit(perPage);
-  
-        res.status(200).send(categories);
-      } catch (error) {
-        res.status(500).send({ error: 'Server error' });
-      }
-
-
-    
-
-}
-
-exports.idCategories = async function (req,res){
-    try {
-        const { id } = req.params;
-
-    const categorie = await Categorie.findById(id)
-
-    if (!categorie){
-        return res.status(404).send({message: "category not found"})
 
 exports.creatCategorie = async function (req, res) {
   const { category_name } = req.body;
@@ -134,11 +68,7 @@ exports.idCategories = async function (req, res) {
   }
 };
 
-exports.updateCategories = async function (req, res) {
-  try {
-    const { id } = req.params;
-    const { category_name, active } = req.body;
-    const category = await categorie.findById(id);
+
 
 exports.updateCategories = async function (req, res) {
   try {
