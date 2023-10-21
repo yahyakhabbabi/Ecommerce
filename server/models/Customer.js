@@ -12,9 +12,11 @@ const customersSchema = new mongoose.Schema({
      password: { type: String,
                required: [true, "Please provide a password"]},
      
-     last_login: { type: Number, default: Date.now() },
+     last_login: { type: Date,
+           default: Date.now() },
      
-     valid_account:{type:Boolean},
+     valid_account:{type:Boolean,
+                    default: false},
      
      active: { type: Boolean, 
           default: true },
@@ -22,4 +24,4 @@ const customersSchema = new mongoose.Schema({
 
 
 },{timestamps:true});
-module.exports = mongoose.model('Customers', customersSchema) ;
+module.exports = {Customers:mongoose.model('Customers', customersSchema)} ;
