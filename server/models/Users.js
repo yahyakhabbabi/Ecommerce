@@ -8,7 +8,9 @@ const UserSchema = new mongoose.Schema(
     email: { type: String, 
             unique: true, 
             required: [true, "Please provide a unique email"]},
-    role: { type: String },
+    role: { type: String ,
+            enum:['Admin','Manager'],
+            default:'Admin'},
     user_name: { type: String, 
                  required: [true, "Please provide a unique username"],
                  unique: [true, "Username already exists"],},
@@ -17,9 +19,11 @@ const UserSchema = new mongoose.Schema(
     last_login: { type: Date, default: Date.now  },  
     active: { type: Boolean, 
            default: true },
+    refreshToken: String
   },
   { timestamps: true }
 );
 
 
-module.exports = mongoose.model("Users", UserSchema);
+
+module.exports = { Users: mongoose.model('Users', UserSchema) };

@@ -1,10 +1,11 @@
 //importation des packages npm
-require('dotenv').config();
-const express = require('express');
+require('dotenv').config('');
 const mongoose = require('mongoose');
-const app = express();
+const app = require('./app')
 const connect = require('../server/config/database');
 const {PORT} = require('../server/config/env')
+
+
 
 
 //declaration des variables
