@@ -17,7 +17,7 @@ exports.creatSubcategorie = async function (req,res){
     }
     }
     
-}
+
 exports.listSubcategories = async function (req,res){
 
 }
