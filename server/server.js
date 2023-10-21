@@ -3,23 +3,23 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
-const connect = require('../server/config/database');
-const {PORT} = require('../server/config/env')
+const connectDb = require('../server/config/database');
+
 
 
 //declaration des variables
-const port = PORT || 3000;
-
-
-connect()
+const port = process.env.PORT || 3000;
 
 
 
-mongoose.connection.once('open',()=>{
-  console.log('connected to Mongodb');
-  app.listen(port, () => console.log(`Server running on port ${port}`));
 
-})
+
+
+
+  app.listen(port, () => {console.log(`Server running on port ${port}`)
+  connectDb()});
+
+
 
 
 
