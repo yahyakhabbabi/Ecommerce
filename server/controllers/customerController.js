@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt'); 
 const emailSender = require('../config/emailSender');
 const { JWT_SECRET, Refresh_JWT_SECRET } = require('../config/env');
-const Customer = require('../models/Customer');
+
 
     
 exports.login = async function (req, res) {
