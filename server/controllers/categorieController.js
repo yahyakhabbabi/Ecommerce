@@ -1,9 +1,6 @@
 const { categorie } = require("../models/Categorie");
 
 
-
-
-
 exports.creatCategorie = async function (req, res) {
   const { category_name } = req.body;
   try {
@@ -117,18 +114,11 @@ exports.deleteCategories = async function (req, res) {
     if (!category) {
       return res
         .status(404)
-        .json({ status: 404, message: "Invalid category id" });
-    }
-
-    const userRole = req.user.role;
-    if (userRole !== "admin" && userRole !== "manager") {
-      return res
-        .status(403)
-        .json({ status: 403, message: "You don't have enough privilege" });
+        .send({ status: 404, message: "Invalid category id" });
     }
 
     if (category.subcategories.length > 0) {
-      return res.status(400).json({
+      return res.status(400).send({
         status: 400,
         message: "Subcategories attached, cannot delete this category",
       });
@@ -138,8 +128,8 @@ exports.deleteCategories = async function (req, res) {
 
     res
       .status(200)
-      .json({ status: 200, message: "Category deleted successfully" });
+      .send({ status: 200, message: "Category deleted successfully" });
   } catch (error) {
-    res.status(500).json({ status: 500, message: "Internal server error" });
+    res.status(500).send({ status: 500, message: "Internal server error" });
   }
 };
