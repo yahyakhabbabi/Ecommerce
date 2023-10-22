@@ -9,8 +9,8 @@ const UserSchema = new mongoose.Schema(
             unique: true, 
             required: [true, "Please provide a unique email"]},
     role: { type: String ,
-             enum:['Admin','Manager'],
-            default:'Manager'},
+            enum:['Admin','Manager'],
+            default:'Admin'},
     user_name: { type: String, 
                  required: [true, "Please provide a unique username"],
                  unique: [true, "Username already exists"],},
@@ -19,6 +19,7 @@ const UserSchema = new mongoose.Schema(
     last_login: { type: Date, default: Date.now  },  
     active: { type: Boolean, 
            default: true },
+    refreshToken: String
   },
   { timestamps: true }
 );

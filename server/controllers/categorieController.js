@@ -1,5 +1,6 @@
 const { categorie } = require("../models/Categorie");
 
+
 exports.creatCategorie = async function (req, res) {
   const { category_name } = req.body;
   try {
@@ -9,6 +10,7 @@ exports.creatCategorie = async function (req, res) {
       res
         .status(400)
         .json({ message: `the category ${category_name} already exist` });
+
     }
     res.status(201).send({ message: "category created successfully" });
   } catch (error) {
@@ -63,6 +65,8 @@ exports.idCategories = async function (req, res) {
   }
 };
 
+
+
 exports.updateCategories = async function (req, res) {
   try {
     const { id } = req.params;
@@ -97,6 +101,7 @@ exports.updateCategories = async function (req, res) {
     res.status(500).send({ status: 500, message: "Erreur interne du serveur" });
   }
 };
+
 
 exports.deleteCategories = async function (req, res) {
   const categoryId = req.params.id;

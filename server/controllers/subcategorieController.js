@@ -14,10 +14,14 @@ exports.creatSubcategorie = async function (req, res) {
     } else {
       res.status(201).send({ message: 'Category created successfully' });
     }
+
   } catch (error) {
     res.status(500).send({ status: 500, message: 'Internal server error' });
   }
 };
+    
+
+
 
 exports.listSubcategories = async function (req, res) {
   try {
