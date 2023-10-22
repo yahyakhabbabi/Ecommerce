@@ -3,11 +3,12 @@ const mongoose = require('mongoose');
 const productSchema = new mongoose.Schema({
     sku:{type: String,
         unique:true},
+
     product_image:{
         type: String},
     product_name:{
         type: String, 
-                  unique:true},
+           unique:true},
     subcategory_id:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Subcategory', },
