@@ -5,7 +5,8 @@ const productSchema = new mongoose.Schema({
         unique:true},
     product_image:{type: String},
 
-    subcategory_id:{ type: mongoose.Schema.Types.ObjectId, ref: 'Subcategorie' },
+    subcategory_id:{ type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Subcategorie' },
 
     product_name:{type: String, 
                   unique:true},
