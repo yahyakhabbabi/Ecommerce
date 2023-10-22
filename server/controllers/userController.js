@@ -163,7 +163,7 @@ exports.SearchUser = async function (req, res) {
     }
   };
   
-  exports.UpdateUser = async function (req, res) {
+exports.UpdateUser = async function (req, res) {
     try {
       const { id } = req.params;
       if (id) {
