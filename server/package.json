@@ -17,10 +17,7 @@
     "express-validator": "^7.0.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.6.1",
-<<<<<<< HEAD
-    "nodemon": "^3.0.1"
-=======
-    "nodemailer": "^6.9.6"
->>>>>>> ac97f22729f6a456c7ce52437e44cbaa9d5af6b5
+    "nodemailer": "^6.9.6",
+    "uuid": "^9.0.1"
   }
 }
