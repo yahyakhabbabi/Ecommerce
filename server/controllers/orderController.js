@@ -95,7 +95,6 @@ exports.orderById = async function(req,res){
         res.status(500).json({ message: 'Internal Server Error' });
       }
     }
-
 exports.updateOrder = async function(req, res) {
         try {
             const { id } = req.params;
