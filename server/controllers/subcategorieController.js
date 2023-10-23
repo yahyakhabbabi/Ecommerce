@@ -29,7 +29,7 @@ exports.listSubcategories = async function (req, res) {
       {
         $lookup: {
           from: 'categories',
-          localField: 'category',
+          localField: 'category_id',
           foreignField: '_id',
           as: 'category',
         },
@@ -60,14 +60,14 @@ exports.searchSubcategories = async function (req, res) {
     const subcategories = await subcategorie.aggregate([
       {
         $lookup: {
-          from: 'categories',
+          from: 'categorie',
           localField: 'categorie',
           foreignField: '_id',
-          as: 'categorie',
+          as: 'category',
         },
       },
       {
-        $unwind: '$categorie',
+        $unwind: '$category',
       },
       {
         $match: {
