@@ -163,13 +163,12 @@ exports.SearchUser = async function (req, res) {
     }
   };
   
-  exports.UpdateUser = async function (req, res) {
+exports.UpdateUser = async function (req, res) {
     try {
       const { id } = req.params;
       if (id) {
         const body = req.body;
   
-        // Vérifiez d'abord si un utilisateur existe avec cet ID
         const user = await Users.findOne({ _id: id });
   
         if (!user) {

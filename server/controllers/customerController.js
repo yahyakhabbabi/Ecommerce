@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt'); 
 const emailSender = require('../config/emailSender');
 const { JWT_SECRET, Refresh_JWT_SECRET } = require('../config/env');
-const Customer = require('../models/Customer');
+
 
     
 exports.login = async function (req, res) {
@@ -123,11 +123,7 @@ exports.getAllCustomer = async function (req,res){
           .skip(skip)
           .limit(limit);
          
-              res.status(200).send(customer);
-            
-    
-       
-    
+              res.status(200).json(customer);            
       } catch (error) {
         console.error(error); 
         res.status(500).send( error.message); 
