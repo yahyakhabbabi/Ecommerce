@@ -169,7 +169,6 @@ exports.UpdateUser = async function (req, res) {
       if (id) {
         const body = req.body;
   
-        // Vérifiez d'abord si un utilisateur existe avec cet ID
         const user = await Users.findOne({ _id: id });
   
         if (!user) {
