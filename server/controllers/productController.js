@@ -1,6 +1,7 @@
 const {Product} = require('../models/Product')
 
 exports.createProduct = async function(req,res){
+  try {
     const {sku,product_image,product_name,subcategory_id,short_description,long_description,
       price,quantity,discount_price,options}= req.body;
     const [existingsku, existingproduct_name] = await Promise.all([
@@ -33,6 +34,11 @@ exports.createProduct = async function(req,res){
      }else{
         return res.status(403).send({ error: "you don't have enough privilege" });
      }
+    
+  } catch (error) {
+    res.status(500).json(error)
+  }
+
 }
 exports.allProducts = async function(req,res){
     try { 
@@ -40,19 +46,20 @@ exports.allProducts = async function(req,res){
         const limit = 10;
         const skip = (page-1)*limit;
         const product = await Product.aggregate([
+       
+            {
+              $lookup: {
+                from: 'subcategories', 
+                localField: 'subcategory_id',
+                foreignField: '_id',
+                as: 'subcategory',
+              },
+            },
             {
               $skip: skip,
             },
             {
               $limit: limit,
-            },
-            {
-              $lookup: {
-                from: 'Subcategory', 
-                localField: 'subcategory_id',
-                foreignField: '_id',
-                as: 'subcategory',
-              },
             },
             {
               $unwind: '$subcategory',
@@ -63,7 +70,7 @@ exports.allProducts = async function(req,res){
                 sku: 1,
                 product_image: 1,
                 product_name: 1,
-                categoryName: '$subcategory.category_name',
+                categoryName: '$subcategory.subcategory_name',
                 short_description: 1,
                 price: 1,
                 discount_price: 1,
@@ -103,7 +110,7 @@ exports.searchProduct = async function(req,res){
           },
           {
             $lookup: {
-              from: 'Subcategory', 
+              from: 'subcategories', 
               localField: 'subcategory_id',
               foreignField: '_id',
               as: 'subcategory',
