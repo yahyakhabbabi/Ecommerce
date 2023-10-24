@@ -1,5 +1,7 @@
+
 const mongoose = require('mongoose');
 const {DATABASE_URI}=require('./env')
+
 
 const connectDB = async () => {
     try {
@@ -11,3 +13,4 @@ const connectDB = async () => {
         console.error(err);
     }}
 module.exports = connectDB;
+

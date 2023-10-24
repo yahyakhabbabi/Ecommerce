@@ -1,10 +1,8 @@
 //importation des packages npm
-
 const mongoose = require('mongoose');
 const app = require('./app')
 const connect = require('../server/config/database');
 const {PORT} = require('../server/config/env')
-
 
 
 
