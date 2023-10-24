@@ -1,12 +1,13 @@
 const { Customers } = require('../models/Customer');
+const {Orders} = require('../models/Order');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt'); 
 const emailSender = require('../config/emailSender');
 const { JWT_SECRET, Refresh_JWT_SECRET } = require('../config/env');
-const Customer = require('../models/Customer');
 
-    
-exports.login = async function (req, res) {
+
+
+exports.login = async function (req,res,next) {
     const { email, password } = req.body;
 
     try {
@@ -14,6 +15,9 @@ exports.login = async function (req, res) {
 
         if (!customer) {
             return res.status(401).json({ message: "Invalid credentials" });
+        }
+        if(!customer.valid_account){
+         return res.status(400).json("you should validate your email first")
         }
 
         if (!customer.active) {
@@ -31,13 +35,13 @@ exports.login = async function (req, res) {
         const accessToken = jwt.sign(
             { id: customer._id, email: customer.email },
             JWT_SECRET,
-            { expiresIn: '30s' }
+            { expiresIn: '1d' }
         );
 
         const refreshToken = jwt.sign(
             { id: customer._id, email: customer.email },
             Refresh_JWT_SECRET,
-            { expiresIn: '60s' }
+            { expiresIn: '7d' }
         );
 
         res.status(200).json({
@@ -52,7 +56,7 @@ exports.login = async function (req, res) {
         res.status(500).json({ error: error.message });
     }
 };
-exports.createCustomer = async function (req, res) {
+exports.createCustomer = async function (req,res,next) {
   try {
     const { firstName, lastName, email, password } = req.body;
     const existingEmail = await Customers.findOne({ email });
@@ -95,13 +99,18 @@ exports.createCustomer = async function (req, res) {
     res.status(500).send(error);
   }
 };
-exports.validateCustomer = async function (req,res){
+exports.validateCustomer = async function (req,res,next){
     try{ 
         const {id} = req.params;
         const customer = await Customers.findById(id);
+        
         if(!customer){
-            res.status(404).send('customer not found')
+         return res.status(404).send('customer not found')
         } 
+        if(customer.valid_account){
+          return res.status(400).json("email already validate")
+         }
+       
         await customer.updateOne({valid_account:true})
         res.status(201).json('your email is validate avec success');
         
@@ -110,7 +119,7 @@ exports.validateCustomer = async function (req,res){
     }
     // return res.redirect('http://localhost:3000/v1/customers/login');
 };
-exports.getAllCustomer = async function (req,res){
+exports.getAllCustomer = async function (req,res,next){
     try {
         const page = parseInt(req.query.page) || 1; 
         const limit = 10;
@@ -123,18 +132,14 @@ exports.getAllCustomer = async function (req,res){
           .skip(skip)
           .limit(limit);
          
-              res.status(200).send(customer);
-            
-    
-       
-    
+              res.status(200).json(customer);            
       } catch (error) {
         console.error(error); 
         res.status(500).send( error.message); 
       }
 
 };
-exports.searchCustomer = async function (req,res){
+exports.searchCustomer = async function (req,res,next){
     try {
         const query = req.query.query || "";
         const page = parseInt(req.query.page) || 1;
@@ -165,7 +170,7 @@ exports.searchCustomer = async function (req,res){
       }
 
 };
-exports.getCustomerById = async function (req,res){
+exports.getCustomerById = async function (req,res,next){
     const {id}=req.params;
     try{
         const customer =await Customers.findById(id)
@@ -180,7 +185,7 @@ exports.getCustomerById = async function (req,res){
     }
 
 };
-exports.updateCustomer = async function (req, res) {
+exports.updateCustomer = async function (req, res,next){
   try {
     const { id } = req.params;
     if (id) {
@@ -204,7 +209,7 @@ exports.updateCustomer = async function (req, res) {
   } catch (error) {
     res.status(500).send({ error: "Internal Server Error" });
   }
-}
+};
 
 exports.deleteCustomer = async function (req,res){
   try{ 
@@ -214,10 +219,10 @@ exports.deleteCustomer = async function (req,res){
   if (!customer) {
     return res.status(404).send('User not found');
   }
-
+  await Orders.deleteMany({ customer_id: id });
   await customer.deleteOne();
 
-  return res.status(200).send('customer deleted successfully');
+  return res.status(200).send('customer and his orders deleted successfully');
      
       }catch(error){
         res.status(500).json(error)
@@ -238,8 +243,8 @@ exports.customerProfile = async function (req,res){
   }
 
 }
-exports.updateDataCustomer = async function (req,res){
-  try{
+exports.updateDataCustomer = async function (req, res) {
+  try {
     const { id } = req.customer;
     if (id) {
       const body = req.body;
@@ -248,18 +253,19 @@ exports.updateDataCustomer = async function (req,res){
       if (!customer) {
         return res.status(404).send('User not found');
       }
-      const existingEmail=Customers.findOne({ _id: id, email: body.email })   
-      if (existingEmail) {
-        return res.status(400).send({ error: "Email already exists" });
-      }
-      await Customers.updateOne({ _id: id }, { $set: body });
 
-      res.status(200).send('User updated successfully');
+     
+        const existingEmail = await Customers.findOne({ _id: id, email: body.email });
+        if (existingEmail) {
+          return res.status(400).send({ error: "Email already exists" });
+        }   
+      await Customers.updateOne({ _id: id }, { $set: { ...body, _id: id } });
+
+      res.status(200).json('User updated successfully');
     } else {
-      res.status(404).send('User not found');
+      res.status(404).json('User not found');
     }
   } catch (error) {
     res.status(500).send(error);
   }
-
 }

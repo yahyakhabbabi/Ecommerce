@@ -2,18 +2,33 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const productSchema = new mongoose.Schema({
-    id:{type:String, unique:true, required:true},
-    sku: { type: String, unique: true, required: true },
-    product_image: { type: String },
-    product_name: { type: String, unique: true, required: true },
-    subcategory_id: { type: Schema.Types.ObjectId, ref: 'Subcategory' },
-    short_description: { type: String },
-    long_description: { type: String },
-    quantity: { type: Number, default: 0 },
-    price: { type: Number, required: true },
-    discount_price: { type: Number, default: null },
-    options: { type: mongoose.Schema.Types.Mixed },
-    active: { type: Boolean, default: false }
-});
+    sku:{type: String,
+        unique:true},
 
-module.exports = mongoose.model('Products', productSchema);
+    product_image:{
+        type: String},
+    product_name:{
+        type: String, 
+           unique:true},
+    subcategory_id:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Subcategory', },
+    short_description:{
+        type: String},
+    long_description:{
+        type: String},
+    price:{type: Number},
+    discount_price:{
+        type: Number},
+    quantity:{
+        type:Number,
+        default:0
+    },
+    options:{type: Array},
+    active:{type:Boolean, 
+            default:false}
+    
+    
+}
+)
+module.exports = {Product:mongoose.model('Product', productSchema)}

@@ -13,7 +13,7 @@ const UserSchema = new mongoose.Schema(
             default:'Admin'},
     user_name: { type: String, 
                  required: [true, "Please provide a unique username"],
-                 unique: [true, "Username already exists"],},
+                 unique: true},
     password: { type: String,
                 required: [true, "Please provide a password"]},
     last_login: { type: Date, default: Date.now  },  
