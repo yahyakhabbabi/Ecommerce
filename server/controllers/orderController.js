@@ -9,8 +9,7 @@ exports.createOrder = async function (req, res) {
             id: uuidv4(),
             customer_id,
             order_items,
-            cart_total_price,
-            order_date: new Date()
+            cart_total_price
         })
         res.status(201).send(createdOrder)
     } catch (error) {
@@ -74,14 +73,14 @@ exports.updateOrder = async function (req, res) {
                 order_items,
                 cart_total_price
             },
-            { new: true }
+            // { new: true }
 
         );
 
         if (updatedOrder) {
-            res.status(200).json({ "message": "Order updated successfully", data: updatedOrder });
+            res.status(200).json({ message: "Order updated successfully", data: updatedOrder });
         } else {
-            res.status(404).json({ "message": "invalid order id" });
+            res.status(404).json({ message: "invalid order id" });
         }
     } catch (error) {
         res.status(500).json(error);

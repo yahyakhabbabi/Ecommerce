@@ -6,7 +6,7 @@ const productSchema = new mongoose.Schema({
     sku: { type: String, unique: true, required: true },
     product_image: { type: String },
     product_name: { type: String, unique: true, required: true },
-    // subcategory_id: { type: Schema.Types.ObjectId, ref: 'Subcategory', required: true },
+    subcategory_id: { type: Schema.Types.ObjectId, ref: 'Subcategory' },
     short_description: { type: String },
     long_description: { type: String },
     quantity: { type: Number, default: 0 },

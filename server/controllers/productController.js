@@ -19,7 +19,7 @@ exports.createProduct = async function (req, res) {
             options
         })
         console.log(createdProduct)
-        res.status(201).json({ "message": "product created successfully" })
+        res.status(201).json({ message: "product created successfully" })
     } catch (error) {
         res.status(500).json(error)
     }
@@ -40,8 +40,9 @@ exports.allProducts = async function (req, res) {
 
 exports.searchProduct = async function (req, res) {
     try {
-        const { query, page } = req.query;
+        const {query} = req.query;
        //displaying 10 elements per page
+       const page = req.query.page || 1;
         const elementsPerPage = 10;
         const skip = (page - 1) * elementsPerPage;
         //regular expression to find an occurence of query in the products name existing in the database
@@ -58,7 +59,10 @@ exports.searchProduct = async function (req, res) {
 exports.productById = async function (req, res) {
     try {
       const id = req.params.id; 
-      const findProductById = await Products.findOne({ id });
+      const findProductById = await Products.findOne({ id }).populate({
+        path: 'subcategory_id',
+        select: 'subcategory_name'
+      });
       
       if (findProductById) {
         res.status(200).json(findProductById);
@@ -121,9 +125,9 @@ exports.productById = async function (req, res) {
       );
   
       if (updatedProduct) {
-        res.status(200).json({ "message": "Product updated successfully", data: updatedProduct });
+        res.status(200).json({ message: "Product updated successfully", data: updatedProduct });
       } else {
-        res.status(404).json({ "message": "invalid product id"});
+        res.status(404).json({ message: "invalid product id"});
       }
     } catch (error) {
       res.status(500).json(error);
@@ -133,14 +137,14 @@ exports.productById = async function (req, res) {
 exports.deleteProduct = async function (req, res) {
 const id = req.params.id;
 if(!id){
-  return res.status(204).json({"message":"enter a valid id"});
+  return res.status(204).json({message:"enter a valid id"});
 }
 try {
   const deleteProduct= await Product.findOneAndDelete({id:id});
   if (!deleteProduct){
-    return res.status(404).json({ "message": "invalid product id"})
+    return res.status(404).json({ message: "invalid product id"})
   }
-  res.status(200).json({"message":"product deleted successfully","data":deleteProduct});
+  res.status(200).json({message:"product deleted successfully","data":deleteProduct});
 } catch (error) {
   res.status(500).json(error);
 }
