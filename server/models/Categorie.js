@@ -4,6 +4,10 @@ const categorieSchema = new mongoose.Schema({
     category_name: {type: String,
                      required: true,
                      unique: true},
+    // subcategories: [{
+    //         type: mongoose.Schema.Types.ObjectId,
+    //         ref: 'Subcategory'
+    //                 }],
     active: {type: Boolean,
         default: false,
          required:true}

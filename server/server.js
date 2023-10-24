@@ -1,30 +1,25 @@
 //importation des packages npm
-require('dotenv').config('');
-
-
-
-const connectDb = require('../server/config/database');
-
-
+const mongoose = require('mongoose');
 const app = require('./app')
 const connect = require('../server/config/database');
 const {PORT} = require('../server/config/env')
 
 
 
-
-
 //declaration des variables
-const port = process.env.PORT || 3000;
+const port = PORT || 3000;
 
 
 
+connect()
 
 
 
+mongoose.connection.once('open',()=>{
+  console.log('connected to Mongodb');
+  app.listen(port, () => console.log(`Server running on port ${port}`));
 
-  app.listen(port, () => {console.log(`Server running on port ${port}`)
-  connectDb()});
+})
 
 
 

@@ -5,6 +5,7 @@ const bodyparser = require('body-parser')
 const app = express();
 
 
+
 //importation des routes
 // const userRoute = require('../server/routes/UserRoute');
 // const customerRoute = require('../server/routes/customerRoute');
@@ -12,7 +13,7 @@ const app = express();
 // const subcategorieRoute = require('../server/routes/SubcategorieRoute');
 const productRoute = require('../server/routes/productRoute');
 const orderRoute = require('../server/routes/orderRoute');
-
+const {errorhandling} = require('../server/middelware/errorMiddleware')
 
 
 //app.use for des building package npm
@@ -28,6 +29,8 @@ app.use(bodyparser.urlencoded({extended:false}))
 // app.use('/v1/subcategories',subcategorieRoute);
 app.use('/v1/products',productRoute);
 app.use('/v1/orders',orderRoute);
+app.use(errorhandling);
+
 
 
 module.exports=app;
