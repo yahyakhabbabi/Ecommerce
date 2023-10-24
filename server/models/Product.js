@@ -11,7 +11,7 @@ const productSchema = new mongoose.Schema({
            unique:true},
     subcategory_id:{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'subcategories', },
+        ref: 'Subcategory', },
     short_description:{
         type: String},
     long_description:{

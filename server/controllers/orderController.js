@@ -1,7 +1,8 @@
 const {Orders} = require('../models/Order')
 const { Customers } = require('../models/Customer');
 
-exports.createOrder = async function(req,res){
+
+exports.createOrder = async function(req,res,next){
     try{
         const {customer_id,order_items,cart_total_price}=req.body;
         const customer = await Customers.findById(customer_id);
@@ -25,8 +26,8 @@ exports.createOrder = async function(req,res){
     }
   
     
-}
-exports.allOrders = async function(req,res){
+};
+exports.allOrders = async function(req,res,next){
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = 10;
@@ -78,8 +79,8 @@ exports.allOrders = async function(req,res){
         console.error(error);
         res.status(500).json({ error: 'Internal server error' });
       }
-}
-exports.orderById = async function(req,res){
+};
+exports.orderById = async function(req,res,next){
     try {
         const orderId = req.params.id;
     
@@ -94,8 +95,8 @@ exports.orderById = async function(req,res){
         console.error(error);
         res.status(500).json({ message: 'Internal Server Error' });
       }
-    }
-exports.updateOrder = async function(req, res) {
+};
+exports.updateOrder = async function(req,res,next) {
         try {
             const { id } = req.params;
             const { status } = req.body;
@@ -116,5 +117,5 @@ exports.updateOrder = async function(req, res) {
         } catch (error) {
             return res.status(500).json(error);
         }
-    }
+};
     

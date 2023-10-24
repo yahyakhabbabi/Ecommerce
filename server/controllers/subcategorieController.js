@@ -2,10 +2,15 @@ const { Subcategory } = require("../models/Subcategorie");
 const {Product} = require("../models/Product")
 const { categorie } = require("../models/Categorie");
 
-exports.creatSubcategorie = async function (req, res) {
+
+exports.creatSubcategorie = async function (req, res,next) {
   const { subcategory_name, category_id } = req.body;
 
   try {
+         const checkCategorie = await categorie.findOne({_id:category_id});
+         if(!checkCategorie){
+        return  res.status(404).json(' he doesn t existe any categorie with this categorie_id')
+         }
     await Subcategory.create({ subcategory_name, category_id });
 
     const subcategories = await Subcategory.findOne({ subcategory_name });
@@ -21,8 +26,7 @@ exports.creatSubcategorie = async function (req, res) {
     res.status(500).send({ status: 500, message: "Internal server error" });
   }
 };
-
-exports.listSubcategories = async function (req, res) {
+exports.listSubcategories = async function (req, res,next) {
   try {
     const page = parseInt(req.query.page) || 1;
     const perPage = 10;
@@ -50,8 +54,7 @@ exports.listSubcategories = async function (req, res) {
     res.status(500).send({ status: 500, message: "Internal server error" });
   }
 };
-
-exports.searchSubcategories = async function (req, res) {
+exports.searchSubcategories = async function (req, res,next) {
   try {
     const query = req.query.query || "";
     const page = parseInt(req.query.page) || 1;
@@ -88,8 +91,7 @@ exports.searchSubcategories = async function (req, res) {
     res.status(500).send({ status: 500, message: "Internal server error" });
   }
 };
-
-exports.idSubcategories = async function (req, res) {
+exports.idSubcategories = async function (req, res,next) {
   try {
     const { id } = req.params;
     const subcategorie = await Subcategory.findById(id).populate({
@@ -107,7 +109,7 @@ exports.idSubcategories = async function (req, res) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-exports.updateSubcategories = async function (req, res) {
+exports.updateSubcategories = async function (req, res,next) {
   const { id } = req.params;
   const { subcategory_name, category_id, active } = req.body;
 
@@ -148,7 +150,7 @@ exports.updateSubcategories = async function (req, res) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-exports.deleteSubcategories = async function (req, res) {
+exports.deleteSubcategories = async function (req, res,next) {
 
   const categoryId = req.params.id;
   try {

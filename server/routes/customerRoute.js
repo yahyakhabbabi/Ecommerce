@@ -7,6 +7,7 @@ const {verifyJWTCustomer} = require('../middelware/authMiddleware')
 
 router.post('/login',customerController.login);
 router.post('/',customerController.createCustomer);
+router.put('/validate/:id',customerController.validateCustomer);
 router.get('/',(req,res,next)=>{
     if(Object.keys(req.query).length>2){
         customerController.searchCustomer(req, res, next);

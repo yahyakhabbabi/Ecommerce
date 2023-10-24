@@ -1,7 +1,8 @@
 const { categorie } = require("../models/Categorie");
 const {Subcategory} = require("../models/Subcategorie")
 
-exports.creatCategorie = async function (req, res) {
+
+exports.creatCategorie = async function (req, res,next) {
   const { category_name } = req.body;
   try {
     await categorie.create({ category_name });
@@ -17,8 +18,7 @@ exports.creatCategorie = async function (req, res) {
     res.status(500).send(error);
   }
 };
-
-exports.listCategories = async function (req, res) {
+exports.listCategories = async function (req, res,next) {
   try {
     const page = parseInt(req.query.page) || 1;
     const perPage = 10;
@@ -31,8 +31,7 @@ exports.listCategories = async function (req, res) {
     res.status(500).send({ error: "Server error" });
   }
 };
-
-exports.searchCategories = async function (req, res) {
+exports.searchCategories = async function (req, res,next) {
   try {
     const query = req.query.query || "";
     const page = parseInt(req.query.page) || 1;
@@ -50,8 +49,7 @@ exports.searchCategories = async function (req, res) {
     res.status(500).send({ error: "Server error" });
   }
 };
-
-exports.idCategories = async function (req, res) {
+exports.idCategories = async function (req, res,next) {
   try {
     const { id } = req.params;
     const category = await categorie.findById(id);
@@ -64,8 +62,7 @@ exports.idCategories = async function (req, res) {
     res.status(500).send(error);
   }
 };
-
-exports.updateCategories = async function (req, res) {
+exports.updateCategories = async function (req, res,next) {
   try {
     const { id } = req.params;
     const { category_name, active } = req.body;
@@ -99,8 +96,7 @@ exports.updateCategories = async function (req, res) {
     res.status(500).send({ status: 500, message: "Erreur interne du serveur" });
   }
 };
-
-exports.deleteCategories = async function (req, res) {
+exports.deleteCategories = async function (req, res,next) {
   const categoryId = req.params.id;
   try {
     const category = await categorie.findById(categoryId);
