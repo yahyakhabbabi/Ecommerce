@@ -15,11 +15,9 @@ router.get('/',(req,res,next)=>{
 });
 // router.get('/',productController.allProducts);
 // router.get('/',productController.searchProduct);
+
 router.get('/:id',productController.productById);
 router.patch('/:id',verifyJWT,isAdminOrManager,productController.updateProduct);
 router.delete('/:id',verifyJWT,isAdminOrManager,productController.deleteProduct);
-
-
-
 
 module.exports=router;

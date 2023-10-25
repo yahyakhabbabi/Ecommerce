@@ -1,10 +1,8 @@
-const express = require('express');
-const router = express.Router();
+// const express = require('express');
+// const router = express.Router();
 
 const categorieController = require('../controllers/categorieController');
 const {verifyJWT,isAdmin,isAdminOrManager} = require('../middelware/authMiddleware');
-
-
 
 router.post('/',verifyJWT,isAdminOrManager,categorieController.creatCategorie);
 router.get('/',(req,res,next)=>{

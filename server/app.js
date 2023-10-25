@@ -3,7 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const bodyparser = require("body-parser");
 const app = express();
-const morgan = require("morgan"); 
+const morgan = require("morgan");
 
 //importation des routes
 const apiRoutes = require("../server/routes/api");
