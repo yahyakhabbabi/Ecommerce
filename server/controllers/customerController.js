@@ -1,72 +1,84 @@
-const { Customers } = require('../models/Customer');
-const {Orders} = require('../models/Order');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt'); 
-const emailSender = require('../config/emailSender');
-const { JWT_SECRET, Refresh_JWT_SECRET } = require('../config/env');
+const { Customers } = require("../models/Customer");
+const { Orders } = require("../models/Order");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const emailSender = require("../config/emailSender");
+const { JWT_SECRET, Refresh_JWT_SECRET } = require("../config/env");
 
+exports.login = async function (req, res, next) {
+  const { email, password } = req.body;
 
+  try {
+    const customer = await Customers.findOne({ email });
 
-exports.login = async function (req,res,next) {
-    const { email, password } = req.body;
-
-    try {
-        const customer = await Customers.findOne({ email });
-
-        if (!customer) {
-            return res.status(401).json({ message: "Invalid credentials" });
-        }
-        if(!customer.valid_account){
-         return res.status(400).json("you should validate your email first")
-        }
-
-        if (!customer.active) {
-            return res.status(401).json({ message: "Account is not active" });
-        }
-
-        const isMatch = await bcrypt.compare(password, customer.password);
-
-        if (!isMatch) {
-            return res.status(401).json({ message: "Invalid credentials" });
-        }
-
-        customer.last_login = new Date();
-
-        const accessToken = jwt.sign(
-            { id: customer._id, email: customer.email },
-            JWT_SECRET,
-            { expiresIn: '1d' }
-        );
-
-        const refreshToken = jwt.sign(
-            { id: customer._id, email: customer.email },
-            Refresh_JWT_SECRET,
-            { expiresIn: '7d' }
-        );
-
-        res.status(200).json({
-            access_token: accessToken,
-            token_type: 'jwt',
-            expires_in: 30, 
-            refresh_token: refreshToken,
-            customer
-        });
-      
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+    if (!customer) {
+      const error = new Error("customer not found");
+      error.statusCode = 404;
+      throw error;
     }
+    if (!customer.valid_account) {
+      const error = new Error("you should validate your email first");
+      error.statusCode = 400;
+      throw error;
+    }
+
+    if (!customer.active) {
+      const error = new Error("Account is not active");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    const isMatch = await bcrypt.compare(password, customer.password);
+
+    if (!isMatch) {
+      const error = new Error("wrong password");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    customer.last_login = new Date();
+
+    const accessToken = jwt.sign(
+      { id: customer._id, email: customer.email, type: "customer" },
+      JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    const refreshToken = jwt.sign(
+      { id: customer._id, email: customer.email, type: "customer" },
+      Refresh_JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.status(200).json({
+      access_token: accessToken,
+      token_type: "jwt",
+      expires_in: 30,
+      refresh_token: refreshToken,
+      customer,
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
 };
-exports.createCustomer = async function (req,res,next) {
+exports.createCustomer = async function (req, res, next) {
   try {
     const { firstName, lastName, email, password } = req.body;
     const existingEmail = await Customers.findOne({ email });
 
     if (existingEmail) {
-      return res.status(400).json({ error: "Email already exists" });
+      const error = new Error("Email already exists");
+      error.statusCode = 403;
+      throw error;
     }
 
     if (!password) {
-      return res.status(400).json({ error: "Password is required" });
+      const error = new Error("Password is required");
+      error.statusCode = 401;
+      throw error;
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -81,168 +93,202 @@ exports.createCustomer = async function (req,res,next) {
     const result = await customer.save();
 
     try {
-
       const url = `http://localhost:3000/v1/customers/validate/${result.id}`;
 
       const emailText = `Please click this email to confirm your email: ${url}`;
 
-      emailSender.sendEmail(email, 'confirmation email', emailText);
-
-    } catch (error) {
-      res.status(500).send(error);
+      emailSender.sendEmail(email, "confirmation email", emailText);
+    } catch (err) {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
     }
 
     if (result) {
-      return res.status(201).json({ msg: "Customer created successfully" });
+      return res
+        .status(201)
+        .json({ msg: "Customer created successfully", result });
     }
-  } catch (error) {
-    res.status(500).send(error);
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
 };
-exports.validateCustomer = async function (req,res,next){
-    try{ 
-        const {id} = req.params;
-        const customer = await Customers.findById(id);
-        
-        if(!customer){
-         return res.status(404).send('customer not found')
-        } 
-        if(customer.valid_account){
-          return res.status(400).json("email already validate")
-         }
-       
-        await customer.updateOne({valid_account:true})
-        res.status(201).json('your email is validate avec success');
-        
-    }catch(error){
-        res.status(500).send(error)
+exports.validateCustomer = async function (req, res, next) {
+  try {
+    const { id } = req.params;
+    const customer = await Customers.findById(id);
+
+    if (!customer) {
+      const error = new Error("customer not found");
+      error.statusCode = 404;
+      throw error;
     }
-    // return res.redirect('http://localhost:3000/v1/customers/login');
-};
-exports.getAllCustomer = async function (req,res,next){
-    try {
-        const page = parseInt(req.query.page) || 1; 
-        const limit = 10;
-        const skip = (page - 1) * limit;
-        const sort = req.query.sort || 'Desc'; 
-        const sortOrder = sort === 'Desc' ? 1 : -1;
-    
-        const customer = await Customers.find({})
-          .sort({ _id: sortOrder })
-          .skip(skip)
-          .limit(limit);
-         
-              res.status(200).json(customer);            
-      } catch (error) {
-        console.error(error); 
-        res.status(500).send( error.message); 
-      }
-
-};
-exports.searchCustomer = async function (req,res,next){
-    try {
-        const query = req.query.query || "";
-        const page = parseInt(req.query.page) || 1;
-        const limit = 10;
-        const skip = (page - 1) * limit;
-        const sort = req.query.sort || 'DESC'; 
-        const sortOrder = sort === 'DESC' ? -1 : 1; 
-    
-        const customers = await Customers.find({
-          $or: [
-            { firstName: { $regex: query, $options: 'i' } } , 
-            { lastName: { $regex: query, $options: 'i' }}, 
-            { email: { $regex: query, $options: 'i' } },
-          ],
-        })
-          .sort({ _id: sortOrder }) 
-          .limit(limit)
-          .skip(skip);
-    
-        if (customers.length === 0) {
-          res.status(404).send("No users found"); 
-        } else {
-          res.status(200).json(customers); 
-        }
-      } catch (error) {
-          console.error("Error:", error); 
-        res.status(500).send(error.message);
-      }
-
-};
-exports.getCustomerById = async function (req,res,next){
-    const {id}=req.params;
-    try{
-        const customer =await Customers.findById(id)
-        if (customer) {
-            res.status(200).send(customer);
-          } else {
-            res.status(404).json({ message: "User not found" }); 
-          }
-
-    }catch(error){
-        res.status(500).send(error);
+    if (customer.valid_account) {
+      const error = new Error("email already validate");
+      error.statusCode = 400;
+      throw error;
     }
 
+    await customer.updateOne({ valid_account: true });
+    res.status(201).json("your email is validate avec success");
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+  // return res.redirect('http://localhost:3000/v1/customers/login');
 };
-exports.updateCustomer = async function (req, res,next){
+exports.getAllCustomer = async function (req, res, next) {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+    const skip = (page - 1) * limit;
+    const sort = req.query.sort || "Desc";
+    const sortOrder = sort === "Desc" ? 1 : -1;
+
+    const customer = await Customers.find({})
+      .sort({ _id: sortOrder })
+      .skip(skip)
+      .limit(limit);
+
+    res.status(200).json(customer);
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+exports.searchCustomer = async function (req, res, next) {
+  try {
+    const query = req.query.query || "";
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+    const skip = (page - 1) * limit;
+    const sort = req.query.sort || "DESC";
+    const sortOrder = sort === "DESC" ? -1 : 1;
+
+    const customers = await Customers.find({
+      $or: [
+        { firstName: { $regex: query, $options: "i" } },
+        { lastName: { $regex: query, $options: "i" } },
+        { email: { $regex: query, $options: "i" } },
+      ],
+    })
+      .sort({ _id: sortOrder })
+      .limit(limit)
+      .skip(skip);
+
+    if (customers.length === 0) {
+      const error = new Error("No customers found");
+      error.statusCode = 404;
+      throw error;
+    } else {
+      res.status(200).json(customers);
+    }
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+exports.getCustomerById = async function (req, res, next) {
+  const { id } = req.params;
+  try {
+    const customer = await Customers.findById(id);
+    if (customer) {
+      res.status(200).send(customer);
+    } else {
+      const error = new Error("customer not found");
+      error.statusCode = 404;
+      throw error;
+    }
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+exports.updateCustomer = async function (req, res, next) {
   try {
     const { id } = req.params;
     if (id) {
       const { firstName, lastName, email, active } = req.body;
-      const updatedCustomer = await Customers.updateOne({ _id: id }, {
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        active: active
-      });
+      const updatedCustomer = await Customers.updateOne(
+        { _id: id },
+        {
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          active: active,
+        }
+      );
 
       if (updatedCustomer.nModified > 0) {
-        return res.status(404).send({ error: "User Not Found" });
+        const error = new Error("customer not found");
+        error.statusCode = 404;
+        throw error;
       } else {
         return res.status(201).send({ msg: "Record updated" });
-       
       }
     } else {
-      return res.status(400).send({ error: "Invalid ID" });
+      const error = new Error("Invalid ID");
+      error.statusCode = 404;
+      throw error;
     }
-  } catch (error) {
-    res.status(500).send({ error: "Internal Server Error" });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
 };
-
-exports.deleteCustomer = async function (req,res){
-  try{ 
-    const {id} = req.customer;
-  const customer = await Customers.findOne({ _id: id });
-  
-  if (!customer) {
-    return res.status(404).send('User not found');
-  }
-  await Orders.deleteMany({ customer_id: id });
-  await customer.deleteOne();
-
-  return res.status(200).send('customer and his orders deleted successfully');
-     
-      }catch(error){
-        res.status(500).json(error)
-      }
-
-}
-exports.customerProfile = async function (req,res){
-  try{
-    const {id} = req.customer;
+exports.deleteCustomer = async function (req, res) {
+  try {
+    const { id } = req.customer;
     const customer = await Customers.findOne({ _id: id });
-  
-  if (!customer) {
-    return res.status(404).send('User not found');
-  }
-  res.status(200).send(customer);
-  }catch(error){
-    res.status(500).json(error)
-  }
 
-}
+    if (!customer) {
+      const error = new Error("customer not found");
+      error.statusCode = 404;
+      throw error;
+    }
+    await Orders.deleteMany({ customer_id: id });
+    await customer.deleteOne();
+
+    return res.status(200).send("customer and his orders deleted successfully");
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+exports.customerProfile = async function (req, res) {
+  try {
+    const { id } = req.customer;
+    const customer = await Customers.findOne({ _id: id });
+
+    if (!customer) {
+      const error = new Error("customer not found");
+      error.statusCode = 404;
+      throw error;
+    }
+    res.status(200).send(customer);
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
 exports.updateDataCustomer = async function (req, res) {
   try {
     const { id } = req.customer;
@@ -251,21 +297,32 @@ exports.updateDataCustomer = async function (req, res) {
       const customer = await Customers.findOne({ _id: id });
 
       if (!customer) {
-        return res.status(404).send('User not found');
+        const error = new Error("customer not found");
+        error.statusCode = 404;
+        throw error;
       }
 
-     
-        const existingEmail = await Customers.findOne({ _id: id, email: body.email });
-        if (existingEmail) {
-          return res.status(400).send({ error: "Email already exists" });
-        }   
+      const existingEmail = await Customers.findOne({
+        _id: id,
+        email: body.email,
+      });
+      if (existingEmail) {
+        const error = new Error("Email already exists");
+        error.statusCode = 400;
+        throw error;
+      }
       await Customers.updateOne({ _id: id }, { $set: { ...body, _id: id } });
 
-      res.status(200).json('User updated successfully');
+      res.status(200).json("User updated successfully");
     } else {
-      res.status(404).json('User not found');
+      const error = new Error("customer not found");
+      error.statusCode = 400;
+      throw error;
     }
-  } catch (error) {
-    res.status(500).send(error);
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
-}
+};

@@ -2,24 +2,24 @@ const express = require('express');
 const router = express.Router();
 
 const customerController = require('../controllers/customerController');
-const {verifyJWTCustomer} = require('../middelware/authMiddleware')
+const {verifyJWT,isAdmin,isAdminOrManager} = require('../middelware/authMiddleware');
 
 
 router.post('/login',customerController.login);
-router.post('/',customerController.createCustomer);
+router.post('/',verifyJWT,customerController.createCustomer);
 router.put('/validate/:id',customerController.validateCustomer);
-router.get('/',(req,res,next)=>{
+router.get('/',verifyJWT,isAdminOrManager,(req,res,next)=>{
     if(Object.keys(req.query).length>2){
         customerController.searchCustomer(req, res, next);
     }else{
         customerController.getAllCustomer(req, res, next);
     }
 });
-router.get('/:id([0-9a-fA-F]{24})', customerController.getCustomerById);
-router.put('/validate/:id',customerController.validateCustomer);
-router.put('/:id',customerController.updateCustomer);
-router.delete('/delete',verifyJWTCustomer,customerController.deleteCustomer);
-router.get('/profile', verifyJWTCustomer, customerController.customerProfile);
-router.patch('/profile/update',verifyJWTCustomer,customerController.updateDataCustomer);
+router.get('/:id([0-9a-fA-F]{24})',verifyJWT,isAdminOrManager,customerController.getCustomerById);
+// router.put('/validate/:id',customerController.validateCustomer);
+router.put('/:id',verifyJWT,isAdminOrManager,customerController.updateCustomer);
+router.delete('/delete',verifyJWT,customerController.deleteCustomer);
+router.get('/profile',verifyJWT,customerController.customerProfile);
+router.patch('/profile/update',verifyJWT,customerController.updateDataCustomer);
 
 module.exports=router;
