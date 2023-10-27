@@ -5,8 +5,9 @@ exports.createOrder = async function (req, res, next) {
   try {
     const { order_items, cart_total_price } = req.body;
     const customer_id = req.customer.id;
+    console.log(customer_id)
     const customer = await Customers.findById(customer_id);
-
+   
     if (!customer || !customer.valid_account) {
       const error = new Error(
         "Customer's email is not validated. Order creation not allowed."

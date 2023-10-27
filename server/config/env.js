@@ -10,6 +10,8 @@ const {
   Cloud_name,
   api_key,
   api_secret,
+  JWT_SECRET_customer,
+  Refresh_JWT_SECRET_customer
 } = process.env;
 
 module.exports = {
@@ -22,4 +24,6 @@ module.exports = {
   Cloud_name,
   api_key,
   api_secret,
+  JWT_SECRET_customer,
+  Refresh_JWT_SECRET_customer
 };

@@ -3,7 +3,7 @@ const { Orders } = require("../models/Order");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const emailSender = require("../config/emailSender");
-const { JWT_SECRET, Refresh_JWT_SECRET } = require("../config/env");
+const { JWT_SECRET_customer, Refresh_JWT_SECRET_customer } = require("../config/env");
 
 exports.login = async function (req, res, next) {
   const { email, password } = req.body;
@@ -40,13 +40,13 @@ exports.login = async function (req, res, next) {
 
     const accessToken = jwt.sign(
       { id: customer._id, email: customer.email, type: "customer" },
-      JWT_SECRET,
+      JWT_SECRET_customer,
       { expiresIn: "1d" }
     );
 
     const refreshToken = jwt.sign(
       { id: customer._id, email: customer.email, type: "customer" },
-      Refresh_JWT_SECRET,
+      Refresh_JWT_SECRET_customer,
       { expiresIn: "7d" }
     );
 

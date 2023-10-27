@@ -3,23 +3,30 @@ const router = express.Router();
 
 const customerController = require('../controllers/customerController');
 const {verifyJWT,isAdmin,isAdminOrManager} = require('../middelware/authMiddleware');
+const { JWT_SECRET, Refresh_JWT_SECRET,JWT_SECRET_customer, Refresh_JWT_SECRET_customer } = require('../config/env');
+const {
+    postloginCustomerValidator,
+    postCreateCustomerValidator,
+    postValidateCustomerValidator,
+    putUpdateCustomer,
+    getCustomerValidator,
+    deletecustomerValidator
+}=require('../utils/validator/customerValidator')
 
-
-router.post('/login',customerController.login);
-router.post('/',verifyJWT,customerController.createCustomer);
-router.put('/validate/:id',customerController.validateCustomer);
-router.get('/',verifyJWT,isAdminOrManager,(req,res,next)=>{
+router.post('/login',postloginCustomerValidator,customerController.login);
+router.post('/',postCreateCustomerValidator,/* verifyJWT(JWT_SECRET_customer), */customerController.createCustomer);
+router.put('/validate/:id',postValidateCustomerValidator,customerController.validateCustomer);
+router.get('/',verifyJWT(JWT_SECRET),isAdminOrManager,(req,res,next)=>{
     if(Object.keys(req.query).length>2){
         customerController.searchCustomer(req, res, next);
     }else{
         customerController.getAllCustomer(req, res, next);
     }
 });
-router.get('/:id([0-9a-fA-F]{24})',verifyJWT,isAdminOrManager,customerController.getCustomerById);
-// router.put('/validate/:id',customerController.validateCustomer);
-router.put('/:id',verifyJWT,isAdminOrManager,customerController.updateCustomer);
-router.delete('/delete',verifyJWT,customerController.deleteCustomer);
-router.get('/profile',verifyJWT,customerController.customerProfile);
-router.patch('/profile/update',verifyJWT,customerController.updateDataCustomer);
+router.get('/:id([0-9a-fA-F]{24})',getCustomerValidator,verifyJWT(JWT_SECRET),isAdminOrManager,customerController.getCustomerById);
+router.put('/:id',putUpdateCustomer,verifyJWT(JWT_SECRET),isAdminOrManager,customerController.updateCustomer);
+router.delete('/delete',verifyJWT(JWT_SECRET_customer),customerController.deleteCustomer);
+router.get('/profile',verifyJWT(JWT_SECRET_customer),customerController.customerProfile);
+router.patch('/profile/update',verifyJWT(JWT_SECRET_customer),customerController.updateDataCustomer);
 
 module.exports=router;
