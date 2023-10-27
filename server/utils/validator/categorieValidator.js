@@ -8,14 +8,12 @@ exports.createCategorieValidator = [
 
   validatorMiddleware,
 ];
-
 exports.getCategorieValidator = [
   check('id')
     .isMongoId()
     .withMessage('Invalid category Id'),
   validatorMiddleware,
 ];
-
 exports.putCategorieValidator = [
   check('id')
     .isMongoId()
@@ -33,7 +31,6 @@ exports.putCategorieValidator = [
 
   validatorMiddleware,
 ];
-
 exports.deleteCategorieValidator = [
   check('id')
     .isMongoId()

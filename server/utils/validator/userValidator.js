@@ -9,9 +9,11 @@ exports.postloginUserValidator = [
     .withMessage("Enter a string for the username"),
   check("password")
     .notEmpty()
-    .withMessage("The password field is required")
-    .isLength({ min: 8 })
-    .withMessage("Password is too short"),
+    .isStrongPassword()
+    .withMessage("Password is required")
+    .withMessage(
+      "Weak password, It should  Be at least 8 characters long. Include a combination of uppercase letters, lowercase letters, numbers, and special characters. Avoid common words, phrases, or easily guessable information"
+    ),
   validatorMiddleware,
 ];
 
@@ -24,9 +26,7 @@ exports.postcreateUserValidator = [
   check("firstName")
     .isString()
     .withMessage("Enter a string for the first name"),
-  check("lastName")
-    .isString()
-    .withMessage("Enter a string for the last name"),
+  check("lastName").isString().withMessage("Enter a string for the last name"),
   check("email")
     .notEmpty()
     .withMessage("The email field is required")
@@ -46,16 +46,12 @@ exports.postcreateUserValidator = [
 ];
 
 exports.getUserValidator = [
-  check("id")
-    .isMongoId()
-    .withMessage("Invalid category ID"),
+  check("id").isMongoId().withMessage("Invalid category ID"),
   validatorMiddleware,
 ];
 
 exports.putUserValidator = [
-  check("id")
-    .isMongoId()
-    .withMessage("Invalid category ID"),
+  check("id").isMongoId().withMessage("Invalid category ID"),
   check("user_name")
     .optional()
     .isString()
@@ -78,16 +74,11 @@ exports.putUserValidator = [
     .withMessage("You should enter Admin or Manager")
     .isIn(["Admin", "Manager"])
     .withMessage("Choose between Admin and Manager"),
-  check("active")
-    .optional()
-    .isBoolean()
-    .withMessage("Enter true or false"),
+  check("active").optional().isBoolean().withMessage("Enter true or false"),
   validatorMiddleware,
 ];
 
 exports.deleteUserValidator = [
-  check("id")
-    .isMongoId()
-    .withMessage("Invalid category ID"),
+  check("id").isMongoId().withMessage("Invalid category ID"),
   validatorMiddleware,
 ];

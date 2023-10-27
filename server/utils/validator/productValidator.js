@@ -2,16 +2,37 @@ const { check } = require("express-validator");
 const { validatorMiddleware } = require("../../middelware/validatorMiddleware");
 
 exports.postCreateProductValidator = [
-  // check('sku').notEmpty().withMessage('Le champ sku est obligatoire'),
-  // check('product_name').notEmpty().withMessage('Le champ product_name est obligatoire'),
-  // check('short_description').notEmpty().withMessage('Le champ short_description est obligatoire'),
-  // check('long_description').notEmpty().withMessage('Le champ long_description est obligatoire'),
-  // check('price').notEmpty().withMessage('Le champ price est obligatoire'),
-  // check('quantity').notEmpty().withMessage('Le champ quantity est obligatoire'),
-  // check('discount_price').notEmpty().withMessage('Le champ discount_price est obligatoire'),
-  // check('options').notEmpty().withMessage('Le champ options est obligatoire'),
-  // check('subcategory_id').isMongoId().withMessage('Invalid subcategory Id'),
-
+  check("sku")
+          .notEmpty()
+          .withMessage("SKU is required")
+          .isString()
+          .withMessage("SKU must be a string"),
+        check("product_image").notEmpty().withMessage("Product image is required"),
+        check("product_name").notEmpty().withMessage("Product name is required"),
+        check("subcategory_id")
+          .notEmpty()
+          .isString()
+          .withMessage("Subcategory ID must be a string"),
+        check("short_description")
+          .notEmpty()
+          .withMessage("Short description is required"),
+        check("long_description")
+          .notEmpty()
+          .withMessage("Long description is required"),
+        check("price")
+          .notEmpty()
+          .withMessage("Price is required")
+          .isNumeric()
+          .withMessage("Price must be a number"),
+        check("discount_price")
+          .optional()
+          .isNumeric()
+          .withMessage("Discount price must be a number"),
+        check("options")
+          .optional()
+          .isArray()
+          .withMessage("Options must be an array"),
+      
   validatorMiddleware,
 ];
 
@@ -22,6 +43,45 @@ exports.getProductValidator = [
 
 exports.patchProductValidator = [
   check('id').isMongoId().withMessage('Invalid product Id'),
+  check("sku")
+   .optional()
+  .notEmpty()
+  .withMessage("SKU is required")
+  .isString()
+  .withMessage("SKU must be a string"),
+check("product_image").optional().notEmpty().withMessage("Product image is required"),
+check("product_name") .optional().notEmpty().withMessage("Product name is required"),
+check("subcategory_id")
+   .optional()
+  .notEmpty()
+  .isString()
+  .withMessage("Subcategory ID must be a string"),
+check("short_description")
+   .optional()
+  .notEmpty()
+  .withMessage("Short description is required"),
+check("long_description")
+   .optional()
+   .notEmpty()
+  .withMessage("Long description is required"),
+check("price")
+  .optional()
+  .notEmpty()
+  .withMessage("Price is required")
+  .isNumeric()
+  .withMessage("Price must be a number"),
+check("discount_price")
+  .optional()
+  .isNumeric()
+  .withMessage("Discount price must be a number"),
+check("options")
+  .optional()
+  .isArray()
+  .withMessage("Options must be an array"),
+check("active")
+.optional()
+  .isBoolean()
+  .withMessage("Active must be a boolean value"),
   validatorMiddleware,
 ];
 
