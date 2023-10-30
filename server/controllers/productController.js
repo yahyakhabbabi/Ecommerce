@@ -1,190 +1,229 @@
-const {Product} = require('../models/Product')
+const { Product } = require("../models/Product");
 
-exports.createProduct = async function(req,res){
-    const {sku,product_image,product_name,subcategory_id,short_description,long_description,
-      price,quantity,discount_price,options}= req.body;
+exports.createProduct = async function (req, res, next) {
+  try {
+    const {
+      sku,
+      product_name,
+      subcategory_id,
+      short_description,
+      long_description,
+      price,
+      quantity,
+      discount_price,
+      options,
+    } = req.body;
+    const product_image = req.file ? req.file.path : null;
+    console.log("req file ", req.file);
     const [existingsku, existingproduct_name] = await Promise.all([
       Product.findOne({ sku }),
-      Product.findOne({ product_name })
+      Product.findOne({ product_name }),
     ]);
 
     if (existingsku) {
-        return res.status(400).json({ error: "sku already exists" });
+      const error = new Error("sku already exists");
+      error.statusCode = 400;
+      throw error;
     }
 
     if (existingproduct_name) {
-        return res.status(400).json({ error: "product_name already exists" });
+      const error = new Error("product_name already exists");
+      error.statusCode = 400;
+      throw error;
     }
-     const product = new Product({
-        sku,
-        product_image,
-        product_name,
-        subcategory_id,
-        short_description,
-        long_description,
-        price,
-        quantity,
-        discount_price,
-        options
-     })
-     const result = await product.save();
-     if(result){
-        res.status(201).json("product created succesfuly")
-     }else{
-        return res.status(403).send({ error: "you don't have enough privilege" });
-     }
-}
-exports.allProducts = async function(req,res){
-    try { 
-        const page = req.query.page || 1;
-        const limit = 10;
-        const skip = (page-1)*limit;
-        const product = await Product.aggregate([
-            {
-              $skip: skip,
-            },
-            {
-              $limit: limit,
-            },
-            {
-              $lookup: {
-                from: 'Subcategory', 
-                localField: 'subcategory_id',
-                foreignField: '_id',
-                as: 'subcategory',
-              },
-            },
-            {
-              $unwind: '$subcategory',
-            },
-            {
-              $project: {
-                _id: 1,
-                sku: 1,
-                product_image: 1,
-                product_name: 1,
-                categoryName: '$subcategory.category_name',
-                short_description: 1,
-                price: 1,
-                discount_price: 1,
-                options: 1,
-                active: 1,
-              },
-            },
-          ]);
-        
-
-        res.status(200).json(product)
-        
-    } catch (error) {
-        res.status(500).json(error);
-    }    
-}
-exports.searchProduct = async function(req,res){
-    try {
-        const page = req.query.page || 1;
-        const limit = 10;
-        const skip = (page - 1) * limit;
-        const query = req.query.query || '';
-    
-        const products = await Product.aggregate([
-          {
-            $match: {
-              $text: {
-                $search: query,
-              },
-            },
-          },
-          {
-            $skip: skip,
-          },
-          {
-            $limit: limit,
-          },
-          {
-            $lookup: {
-              from: 'Subcategory', 
-              localField: 'subcategory_id',
-              foreignField: '_id',
-              as: 'subcategory',
-            },
-          },
-          {
-            $unwind: '$subcategory',
-          },
-          {
-            $project: {
-              _id: 1,
-              sku: 1,
-              product_image: 1,
-              product_name: 1,
-              subcategory_id:1,
-              subcategory_name: '$subcategory.category_name',
-              short_description: 1,
-              price: 1,
-              discount_price: 1,
-              options: 1,
-              active: 1,
-            },
-          },
-        ]);
-    
-        res.status(200).json(products);
-    
-      } catch (error) {
-        res.status(500).json(error);
-      }
+    const product = new Product({
+      sku,
+      product_image,
+      product_name,
+      subcategory_id,
+      short_description,
+      long_description,
+      price,
+      quantity,
+      discount_price,
+      options,
+    });
+    const result = await product.save();
+    if (result) {
+      res.status(201).json("product created succesfuly");
+    } else {
+      const error = new Error("you don't have enough privilege");
+      error.statusCode = 403;
+      throw error;
     }
-exports.productById = async function(req,res){
-    try {
-        const {id} = req.params;
-        const product = await Product.findById(id);
-        if(product){
-            res.status(200).json(product);
-        }else{
-            res.status(404).json('product not found')
-        }
-    } catch (error) {
-        res.status(500).json(error);
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
     }
-    
-}
-exports.updateProduct = async function (req, res) {
-    try {
-        const { id } = req.params;
-        const { body } = req;
+    next(err);
+  }
+};
+exports.allProducts = async function (req, res, next) {
+  try {
+    const page = req.query.page || 1;
+    const limit = 10;
+    const skip = (page - 1) * limit;
+    const product = await Product.aggregate([
+      {
+        $lookup: {
+          from: "subcategories",
+          localField: "subcategory_id",
+          foreignField: "_id",
+          as: "subcategory",
+        },
+      },
+      {
+        $skip: skip,
+      },
+      {
+        $limit: limit,
+      },
+      {
+        $project: {
+          _id: 1,
+          sku: 1,
+          product_image: 1,
+          product_name: 1,
+          categoryName: "$subcategory.subcategory_name",
+          short_description: 1,
+          price: 1,
+          discount_price: 1,
+          options: 1,
+          active: 1,
+        },
+      },
+    ]);
 
-        const product = await Product.findById(id);
-        if (!product) {
-            return res.status(404).json({ error: 'Product not found' });
-        }
-
-        const existingProduct = await Product.findOne({ product_name: body.product_name });
-
-        if (existingProduct && existingProduct._id.toString() !== id) {
-            return res.status(400).json({ error: 'Product_name already exists' });
-        }
-
-        await Product.updateOne({ _id: id }, { $set: body });
-
-        res.status(200).json('Product updated successfully');
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+    res.status(200).json(product);
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
     }
-}
-exports.deleteProduct = async function(req,res){
-    try {
-        const { id } = req.params;
-        const product = await Product.findOne({ _id: id });
-    
-        if (!product) {
-          return res.status(404).json('product not found');
-        }
-    
-        await product.deleteOne();
-    
-        return res.status(200).json('product deleted successfully');
-      } catch (error) {
-        return res.status(500).json(error);
-      }
-}
+    next(err);
+  }
+};
+exports.searchProduct = async function (req, res, next) {
+  try {
+    const page = req.query.page || 1;
+    const limit = 10;
+    const skip = (page - 1) * limit;
+    const query = req.query.query || "";
+
+    const products = await Product.aggregate([
+      {
+        $match: {
+          product_name: { $regex: query, $options: "i" },
+        },
+      },
+      {
+        $skip: skip,
+      },
+      {
+        $limit: limit,
+      },
+      {
+        $lookup: {
+          from: "subcategories",
+          localField: "subcategory_id",
+          foreignField: "_id",
+          as: "subcategory",
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          sku: 1,
+          product_image: 1,
+          product_name: 1,
+          subcategory_id: 1,
+          subcategory_name: "$subcategory.subcategory_name",
+          short_description: 1,
+          price: 1,
+          discount_price: 1,
+          options: 1,
+          active: 1,
+        },
+      },
+    ]);
+
+    res.status(200).json(products);
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+exports.productById = async function (req, res, next) {
+  try {
+    const { id } = req.params;
+    const product = await Product.findById(id).populate({
+      path: "subcategory_id",
+      select: "subcategory_name",
+    });
+    if (!product) {
+      const error = new Error("No product found with the provided ID");
+      error.statusCode = 401;
+      throw error;
+    }
+    res.status(200).json(product);
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+exports.updateProduct = async function (req, res, next) {
+  try {
+    const { id } = req.params;
+    const { body } = req;
+
+    const product = await Product.findById(id);
+    if (!product) {
+      const error = new Error("Product not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const existingProduct = await Product.findOne({
+      product_name: body.product_name,
+    });
+
+    if (existingProduct && existingProduct._id.toString() !== id) {
+      const error = new Error("Product_name already exists");
+      error.statusCode = 400;
+      throw error;
+    }
+
+    await Product.updateOne({ _id: id }, { $set: body });
+
+    res.status(200).json("Product updated successfully");
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+exports.deleteProduct = async function (req, res, next) {
+  try {
+    const { id } = req.params;
+    const product = await Product.findOne({ _id: id });
+
+    if (!product) {
+      const error = new Error("product not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    await product.deleteOne();
+
+    return res.status(200).json("product deleted successfully");
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
