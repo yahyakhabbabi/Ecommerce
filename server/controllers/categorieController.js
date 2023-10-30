@@ -1,4 +1,5 @@
 const { categorie } = require("../models/Categorie");
+const {Subcategory} = require("../models/Subcategorie")
 
 exports.creatCategorie = async function (req, res) {
   const { category_name } = req.body;
@@ -9,6 +10,7 @@ exports.creatCategorie = async function (req, res) {
       res
         .status(400)
         .json({ message: `the category ${category_name} already exist` });
+
     }
     res.status(201).send({ message: "category created successfully" });
   } catch (error) {
@@ -100,31 +102,27 @@ exports.updateCategories = async function (req, res) {
 
 exports.deleteCategories = async function (req, res) {
   const categoryId = req.params.id;
-
   try {
-    const category = await Category.findById(categoryId).populate(
-      "subcategories"
-    );
+    const category = await categorie.findById(categoryId);
 
     if (!category) {
-      return res
-        .status(404)
-        .send({ status: 404, message: "Invalid category id" });
+      return res.status(404).json({ status: 404, message: 'ID de catégorie invalide' });
     }
 
-    if (category.subcategories.length > 0) {
-      return res.status(400).send({
+ 
+    const subcategories = await Subcategory.find({ category_id: categoryId });
+    if (subcategories.length > 0) {
+      return res.status(400).json({
         status: 400,
-        message: "Subcategories attached, cannot delete this category",
+        message: 'Impossible de supprimer cette catégorie, des sous-catégories y sont attachées',
       });
     }
 
-    await category.remove();
+    await category.deleteOne();
 
-    res
-      .status(200)
-      .send({ status: 200, message: "Category deleted successfully" });
+    res.status(200).json({ status: 200, message: 'Catégorie supprimée avec succès' });
   } catch (error) {
-    res.status(500).send({ status: 500, message: "Internal server error" });
+    console.error(error);
+    res.status(500).json({ status: 500, message: 'Erreur interne du serveur' });
   }
 };
