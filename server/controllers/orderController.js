@@ -26,8 +26,28 @@ exports.createOrder = async function(req,res,next){
         res.status(500).json(error);
     }
   
-    
+    exports.allOrders = async function (req, res) {
+      try {
+          const page = req.query.page || 1;
+          const elementsPerPage = 10;
+          const skip = (page - 1) * elementsPerPage;
+  
+          // Fetch the orders for the specified page
+          const ordersList = await Orders.find().skip(skip).limit(elementsPerPage);
+  
+          // Count the number of orders in the fetched list
+          const pageOrderCount = ordersList.length;
+  
+          res.status(200).json({
+              total: pageOrderCount,
+              orders: ordersList
+          });
+      } catch (error) {
+          return res.status(500).json(error);
+      }
+  }
 };
+
 exports.allOrders = async function(req,res,next){
     try {
         const page = parseInt(req.query.page) || 1;
