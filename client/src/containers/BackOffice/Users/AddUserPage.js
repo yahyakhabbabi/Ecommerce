@@ -10,21 +10,23 @@ import {
   Select,
 } from '@mui/material';
 
-export default function EditUserPage({ isOpen, onClose, onSave, initialUsername, initialEmail, initialStatus }) {
-  const [username, setUsername] = useState(initialUsername);
-  const [email, setEmail] = useState(initialEmail);
-  const [status,setStatus] = useState(initialStatus);
+export default function AddUserPage({ isOpen, onClose, onSave }) {
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState('active');
 
   const handleSave = () => {
     onSave(username, email, status);
+    setUsername('');
+    setEmail('');
     onClose();
   };
 
   return (
-    <Dialog open={isOpen} onClose={onClose} aria-labelledby="edit-dialog-title">
-      <DialogTitle id="edit-dialog-title">Edit User</DialogTitle>
+    <Dialog open={isOpen} onClose={onClose} aria-labelledby="add-user-dialog-title">
+      <DialogTitle id="add-user-dialog-title">Add User</DialogTitle>
       <DialogContent>
-        <DialogContentText>Edit the user's information:</DialogContentText>
+        <DialogContentText>Enter the user's information:</DialogContentText>
         <TextField
           label="Username"
           fullWidth
@@ -44,7 +46,7 @@ export default function EditUserPage({ isOpen, onClose, onSave, initialUsername,
           onChange={(e) => setStatus(e.target.value)}
         >
           <option value="active">Active</option>
-          <option value="inactive">passive</option>
+          <option value="inactive">Passive</option>
         </Select>
       </DialogContent>
       <DialogActions>

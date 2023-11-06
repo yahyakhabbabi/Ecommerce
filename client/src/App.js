@@ -1,19 +1,15 @@
 import './App.css';
-import { Route,Routes,/* Link */ } from 'react-router-dom';
+import React from 'react';
+import UsersListPage from './containers/BackOffice/Users/UsersListPage';
+import {Route,Routes} from "react-router-dom"
 function App() {
   return (
+
     <div className="App">
-    <Routes>
-      <Route path='/hello' element={<h1>hello world</h1>}/>
-      <Route path='/hello' element={<h1>hello world</h1>}/>
-      <Route path='/hello' element={<h1>hello world</h1>}/>
-      <Route path='/hello' element={<h1>hello world</h1>}/>
-      <Route path='/hello' element={<h1>hello world</h1>}/>
-      <Route path='/hello' element={<h1>hello world</h1>}/>
-      <Route path='/hello' element={<h1>hello world</h1>}/>
-      <Route path='/hello' element={<h1>hello world</h1>}/>
-      <Route path='/hello' element={<h1>hello world</h1>}/>
-    </Routes>
+      <Routes>
+        <Route path="/users" element={<UsersListPage />}/>
+      </Routes>
+    
     </div>
   );
 }
