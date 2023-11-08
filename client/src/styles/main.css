@@ -1,0 +1,28 @@
+:root {
+  --body_background: white;
+  --body_color: black;
+  --body_link: navy;
+}
+
+[data-theme="dark"] {
+  --body_background: #282c34;
+  --body_color: white;
+  --body_link: cyan;
+}
+
+.appBar {
+  background-color: var(--body_background);
+  color: var(--body_color);
+}
+
+.copyright {
+  position: relative; 
+  width: 100%;
+  text-align: center;
+  background-color: var(--body_background);
+  color: var(--body_color);
+  padding: 2px;
+  font-size: 10px;
+  bottom: 0;
+}
+
