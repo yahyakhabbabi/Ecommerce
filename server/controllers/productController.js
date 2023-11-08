@@ -1,12 +1,9 @@
-
 const { Product } = require("../models/Product");
 
-  
-exports.createProduct = async function (req, res,next) {
+exports.createProduct = async function (req, res, next) {
   try {
     const {
       sku,
-      product_image,
       product_name,
       subcategory_id,
       short_description,
@@ -16,17 +13,23 @@ exports.createProduct = async function (req, res,next) {
       discount_price,
       options,
     } = req.body;
+    const product_image = req.file ? req.file.path : null;
+    console.log("req file ", req.file);
     const [existingsku, existingproduct_name] = await Promise.all([
       Product.findOne({ sku }),
       Product.findOne({ product_name }),
     ]);
 
     if (existingsku) {
-      return res.status(400).json({ error: "sku already exists" });
+      const error = new Error("sku already exists");
+      error.statusCode = 400;
+      throw error;
     }
 
     if (existingproduct_name) {
-      return res.status(400).json({ error: "product_name already exists" });
+      const error = new Error("product_name already exists");
+      error.statusCode = 400;
+      throw error;
     }
     const product = new Product({
       sku,
@@ -44,13 +47,18 @@ exports.createProduct = async function (req, res,next) {
     if (result) {
       res.status(201).json("product created succesfuly");
     } else {
-      return res.status(403).send({ error: "you don't have enough privilege" });
+      const error = new Error("you don't have enough privilege");
+      error.statusCode = 403;
+      throw error;
     }
-  } catch (error) {
-    res.status(500).json(error);
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
 };
-exports.allProducts = async function (req, res,next) {
+exports.allProducts = async function (req, res, next) {
   try {
     const page = req.query.page || 1;
     const limit = 10;
@@ -87,11 +95,14 @@ exports.allProducts = async function (req, res,next) {
     ]);
 
     res.status(200).json(product);
-  } catch (error) {
-    res.status(500).json(error);
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
 };
-exports.searchProduct = async function (req, res,next) {
+exports.searchProduct = async function (req, res, next) {
   try {
     const page = req.query.page || 1;
     const limit = 10;
@@ -136,12 +147,14 @@ exports.searchProduct = async function (req, res,next) {
     ]);
 
     res.status(200).json(products);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json(error);
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
 };
-exports.productById = async function (req, res,next) {
+exports.productById = async function (req, res, next) {
   try {
     const { id } = req.params;
     const product = await Product.findById(id).populate({
@@ -149,24 +162,28 @@ exports.productById = async function (req, res,next) {
       select: "subcategory_name",
     });
     if (!product) {
-      return res
-        .status(401)
-        .json({ error: "No product found with the provided ID" });
+      const error = new Error("No product found with the provided ID");
+      error.statusCode = 401;
+      throw error;
     }
     res.status(200).json(product);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Internal Server Error" });
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
 };
-exports.updateProduct = async function (req, res,next) {
+exports.updateProduct = async function (req, res, next) {
   try {
     const { id } = req.params;
     const { body } = req;
 
     const product = await Product.findById(id);
     if (!product) {
-      return res.status(404).json({ error: "Product not found" });
+      const error = new Error("Product not found");
+      error.statusCode = 404;
+      throw error;
     }
 
     const existingProduct = await Product.findOne({
@@ -174,30 +191,39 @@ exports.updateProduct = async function (req, res,next) {
     });
 
     if (existingProduct && existingProduct._id.toString() !== id) {
-      return res.status(400).json({ error: "Product_name already exists" });
+      const error = new Error("Product_name already exists");
+      error.statusCode = 400;
+      throw error;
     }
 
     await Product.updateOne({ _id: id }, { $set: body });
 
     res.status(200).json("Product updated successfully");
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
 };
-
-exports.deleteProduct = async function (req, res) {
-  const id = req.params.id;
-  if(!id){
-    return res.status(204).json({message:"enter a valid id"});
-  }
+exports.deleteProduct = async function (req, res, next) {
   try {
-    const deleteProduct= await Product.findOneAndDelete({_id:id});
-    if (!deleteProduct){
-      return res.status(404).json({ message: "product not found"})
+    const { id } = req.params;
+    const product = await Product.findOne({ _id: id });
+
+    if (!product) {
+      const error = new Error("product not found");
+      error.statusCode = 404;
+      throw error;
     }
-    res.status(200).json({message:"product deleted successfully","data":deleteProduct});
-  } catch (error) {
-    res.status(500).json(error);
+
+    await product.deleteOne();
+
+    return res.status(200).json("product deleted successfully");
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   }
-  
-  }
+};
