@@ -15,9 +15,9 @@ const {
   putUserValidator,
   deleteUserValidator,} = require("../utils/validator/userValidator");
 
-router.post("/login",postloginUserValidator,userController.login);
+router.post("/login",/* postloginUserValidator, */userController.login);
 router.post("/",postcreateUserValidator,verifyJWT(JWT_SECRET), isAdmin, userController.addUsers);
-router.get("/", verifyJWT(JWT_SECRET), isAdminOrManager, (req, res, next) => {
+router.get("/", /* verifyJWT(JWT_SECRET), isAdminOrManager,  */(req, res, next) => {
   if (Object.keys(req.query).length > 2) {
     userController.SearchUser(req, res, next);
   } else {

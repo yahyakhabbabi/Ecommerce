@@ -55,11 +55,21 @@ exports.allOrders = async function (req, res, next) {
         $unwind: "$customer_info",
       },
       {
+        $addFields: {
+          firstName: "$customer_info.firstName",
+          lastName: "$customer_info.lastName",
+        },
+      },
+      {
         $project: {
           count: 1,
           itemsTotal: 1,
-          "customer_info.firstName": 1,
-          "customer_info.lastName": 1,
+          order_items:1,
+          cart_total_price:1,
+          status:1,
+          order_date:1,
+          firstName: 1,
+          lastName: 1,
         },
       },
       {

@@ -16,7 +16,7 @@ const {
 router.post('/login',postloginCustomerValidator,customerController.login);
 router.post('/',postCreateCustomerValidator,/* verifyJWT(JWT_SECRET_customer), */customerController.createCustomer);
 router.put('/validate/:id',postValidateCustomerValidator,customerController.validateCustomer);
-router.get('/',verifyJWT(JWT_SECRET),isAdminOrManager,(req,res,next)=>{
+router.get('/'/* ,verifyJWT(JWT_SECRET),isAdminOrManager */,(req,res,next)=>{
     if(Object.keys(req.query).length>2){
         customerController.searchCustomer(req, res, next);
     }else{

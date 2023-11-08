@@ -88,8 +88,9 @@ exports.allProducts = async function (req, res, next) {
           short_description: 1,
           price: 1,
           discount_price: 1,
-          options: 1,
           active: 1,
+          options: 1
+       
         },
       },
     ]);

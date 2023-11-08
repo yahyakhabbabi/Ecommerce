@@ -20,6 +20,7 @@ const verifyJWT =(secret_key)=>(req, res, next) => {
     next();
   });
 };
+
 // const verifyJWT = (secret_key) => (req, res, next) => {
 //   const authHeader = req.headers.authorization || req.headers.Authorization;
 //   if (!authHeader?.startsWith("Bearer"))
