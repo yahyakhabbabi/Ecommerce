@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import DataTable from "../../../components/GestionTableau";
+import DataTable from "../../../components/DataTable";
 
 export default function CustomerTable() {
   const [customers, setCustomers] = useState([]);
@@ -30,6 +30,11 @@ export default function CustomerTable() {
   const deleteCustomer = (id) => {
     // Implement delete logic here
   };
+  const handleSave = (data) => {
+    // Implement save logic here for the data received from the modal
+    // You can use the 'data' parameter to access the form input values
+    console.log("Received data from modal:", data);
+  };
 
   return (
     <>
@@ -42,10 +47,19 @@ export default function CustomerTable() {
             { field: "firstName", label: "First Name" },
             { field: "lastName", label: "Last Name" },
             { field: "email", label: "Email" },
-            { field: "valid_account", label: "Valid account" },
+            { field: "valid_account", label: "Valid account",type:"Booleen" },
+          ]}
+          column={[
+            { field: "firstName", label: "First Name" },
+            { field: "lastName", label: "Last Name" },
+            { field: "email", label: "Email",type:"email" },
+            { field: "password", label: "password",type:"password" },
           ]}
           onDelete={deleteCustomer}
           title="Customers List"
+          onSave={handleSave}
+          dialogTitle="Create Customer"
+          tableType="customer"
         />
       )}
     </>

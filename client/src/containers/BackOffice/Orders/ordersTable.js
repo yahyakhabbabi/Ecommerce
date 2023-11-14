@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import DataTable from "../../../components/GestionTableau"; // Import the DataTable component
+import DataTable from "../../../components/DataTable"; // Import the DataTable component
 
 export default function OrdersTable() {
   const [orders, setOrders] = useState([]);
@@ -35,6 +35,11 @@ export default function OrdersTable() {
   const deleteOrder = (id) => {
     // Implement delete logic here
   };
+  const handleSave = (data) => {
+    // Implement save logic here for the data received from the modal
+    // You can use the 'data' parameter to access the form input values
+    console.log("Received data from modal:", data);
+  };
 
   return (
     <>
@@ -50,9 +55,19 @@ export default function OrdersTable() {
             { field: "order_date", label: "Order Date" },
             { field: "cart_total_price", label: "Cart Total Price" },
             { field: "status", label: "Status" },
-          ]}          
+          ]}
+          column={[
+            { field: "firstName", label: "First Name" },
+            { field: "lastName", label: "Last Name" },
+            { field: "order_items", label: "Order Items" },
+            { field: "order_date", label: "Order Date" },
+            { field: "cart_total_price", label: "Cart Total Price" },
+            { field: "status", label: "Status" },
+          ]}
           onDelete={deleteOrder}
           title="Orders List"
+          onSave={handleSave}
+          tableType="order"
         />
       )}
     </>

@@ -1,5 +1,5 @@
 import "./dash.css";
-import React from "react";
+import React,{useContext} from "react";
 import MiniDrawer from "../../../components/Sidnevbar";
 import Navbar from "../../../components/Navbar";
 import Box from "@mui/material/Box";
@@ -11,10 +11,19 @@ import Tinybarchart from "./Tinybarchart";
 import PieChartComponent from "./PieCart";
 import CustomCard from "./Card";
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import AuthContext from "../../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 
 
 export default function DashboardPage() {
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
+  if (!user) {
+
+    navigate("/");
+    return null;
+  }
   return (
     <div className="bgcolor">
       <Navbar />
