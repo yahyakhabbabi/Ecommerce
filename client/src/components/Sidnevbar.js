@@ -19,6 +19,9 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import LocalMallIcon from '@mui/icons-material/LocalMall';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import CategoryIcon from '@mui/icons-material/Category';
+import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
+
 import "../styles/main.css"
 const drawerWidth = 240;
 
@@ -133,6 +136,20 @@ export default function MiniDrawer() {
         icon={<PeopleOutlineIcon />}
         primaryText="Customers"
         path="/v1/customers/"
+        open={open}
+        navigate={navigate}
+      />
+         <CustomListItem
+        icon={<CategoryIcon />}
+        primaryText="Categorie"
+        path="/v1/categorie/"
+        open={open}
+        navigate={navigate}
+      />
+         <CustomListItem
+        icon={<SubdirectoryArrowRightIcon />}
+        primaryText="Subcategorie"
+        path="/v1/Subcategorie/"
         open={open}
         navigate={navigate}
       />

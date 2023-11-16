@@ -6,28 +6,28 @@ import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Fade from "@mui/material/Fade";
-import "./users.css";
+
 
 export default function UsersTable() {
   const authContext = useContext(AuthContext);
   const { authTokens } = authContext;
-  const tableName = "users"
-  const [users, setUsers] = useState([]);
+const tableName = "Subcategorie"
+  const [subCategorie, setSubCategorie] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const [openSuccess, setOpenSuccess] = useState(false);
   const [openError, setOpenError] = useState(false); 
-
+  
   const fetchData = useCallback(async () => {
     try {
-      const response = await axios.get("http://localhost:3000/v1/users", {
+      const response = await axios.get("http://localhost:3000/v1/Subcategories", {
         headers: {
           Authorization: `Bearer ${authTokens?.access_token}`,
         },
       });
       if (response.status === 200) {
-        setUsers(response.data.users);
+        setSubCategorie(response.data);
         setIsLoading(false);
       } else {
         setError("Failed to fetch user data.");
@@ -43,10 +43,9 @@ export default function UsersTable() {
   useEffect(() => {
     fetchData();
   }, [fetchData, authTokens]);
-
   const handleSave = (data) => {
     axios
-      .post("http://localhost:3000/v1/users", data, {
+      .post("http://localhost:3000/v1/Subcategories", data, {
         headers: {
           Authorization: `Bearer ${authTokens?.access_token}`,
         },
@@ -81,10 +80,11 @@ export default function UsersTable() {
     setError(null);
   };
 
+
   const deleteUser = async (id) => {
     try {
       const response = await axios.delete(
-        `http://localhost:3000/v1/users/${id}`,
+        `http://localhost:3000/v1/Subcategories/${id}`,
         {
           headers: {
             Authorization: `Bearer ${authTokens?.access_token}`,
@@ -92,16 +92,18 @@ export default function UsersTable() {
         }
       );
       if (response.status === 200) {
-        setUsers(users.filter((user) => user._id !== id));
+        setSubCategorie(subCategorie.filter((subCategorie) => subCategorie._id !== id));
         setSuccessMessage("User deleted successfully");
-        setOpenSuccess(true); 
+        setOpenSuccess(true); // Open success modal
+
+        // Clear success message after 3 seconds
         setTimeout(() => {
           setSuccessMessage(null);
-          setOpenSuccess(false);
+          setOpenSuccess(false); // Close success modal
         }, 3000);
       } else {
         setError("Failed to delete user");
-        setOpenError(true); //
+        setOpenError(true); // Open error modal
 
         // Clear error message after 3 seconds
         setTimeout(() => {
@@ -120,6 +122,8 @@ export default function UsersTable() {
       }, 3000);
     }
   };
+
+ 
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center">
@@ -178,36 +182,30 @@ export default function UsersTable() {
         </Fade>
       </Modal>
       {isLoading && <p>Loading...</p>}
-      {!isLoading && users.length > 0 && (
+      {!isLoading && subCategorie.length > 0 && (
         <DataTable
-          data={users}
-          columns={[
-            { field: "firstName", label: "First Name" },
-            { field: "lastName", label: "Last Name" },
-            { field: "email", label: "Email" },
-            { field: "role", label: "Role" },
-          ]}
-          column={[
-            { field: "user_name", label: "Username" },
-            { field: "firstName", label: "First Name" },
-            { field: "lastName", label: "Last Name" },
-            { field: "email", label: "Email", type: "email" },
-            {
-              field: "role",
-              label: "Role",
-              type: "Booleen",
-              option1: "Admin",
-              option2: "Manager",
-            },
-            { field: "password", label: "Password", type: "password" },
-          ]}
-          onDelete={deleteUser}
-          title="Users List"
-          onSave={handleSave}
-          dialogTitle="Create User"
+        data={subCategorie}
+        columns={[
+          { field: "_id", label: "id" },
+          { field: "subcategory_name", label: "subcategory_name" },
+          { field: "category_name", label: "category_name" },
+          { field: "active", label: "active",type:"Booleen"},
+        ]}
+        column={[
+          { field: "category_id", label: "category_id" },
+          { field: "subcategory_name", label: "subcategory_name" },
+        
+      
+        ]}
+        onDelete={deleteUser}
+        title="subCategorie List"
+        onSave={handleSave}
+        dialogTitle="Create subCategorie"
           tableName={tableName}
         />
       )}
     </Box>
   );
 }
+
+

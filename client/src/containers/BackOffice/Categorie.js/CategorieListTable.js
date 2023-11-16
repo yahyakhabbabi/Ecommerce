@@ -3,12 +3,15 @@ import MiniDrawer from "../../../components/Sidnevbar";
 import Box from "@mui/material/Box";
 import Navbar from "../../../components/Navbar";
 import Copyright from "../../../components/Footer";
-
+// import Grid from "@mui/material/Grid";
+// import Typography from "@mui/material/Typography";
+// import Card from "@mui/material/Card";
+// import CardContent from "@mui/material/CardContent";
 import "../Dashboard/dash.css";
-import UsersTable from "./UsersTable";
+import CategorieTable from "./CategorieTable";
 // import useRefreshToken from "../../../hooks/useRefreshToken";
 
-export default function UsersListPage() {
+export default function CategorieListPage() {
   return (
     <div className="bgcolor">
       <Navbar />
@@ -18,7 +21,7 @@ export default function UsersListPage() {
         <MiniDrawer />
         <Box component="main" sx={{ flexGrow: 1, p: 2 }}>
        
-                  <UsersTable />
+                  <CategorieTable />
         </Box>
       </Box>
       <Copyright />
