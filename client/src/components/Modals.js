@@ -35,6 +35,13 @@ export default function Modals({ modal, toggle, save, fields, dialogTitle }) {
     save(formValues);
     setFormValues(initialFieldValues); // Reset form values after saving
   };
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setFormValues({
+      ...formValues,
+      product_image: file,
+    });
+  };
 
   return (
     <Dialog open={modal} onClose={toggle}>
@@ -49,7 +56,7 @@ export default function Modals({ modal, toggle, save, fields, dialogTitle }) {
         <form>
           <Grid container spacing={3}>
             {fields.map((field) => (
-              <Grid item xs={fields.length <= 8 ? 6 : 4} key={field.field}>
+              <Grid item xs={fields.length === 1 ? 12 : fields.length <= 8 ? 6 : 4} key={field.field}>
                 {field.type === "email" ? (
                   // Handle email input
                   <TextField
@@ -92,6 +99,14 @@ export default function Modals({ modal, toggle, save, fields, dialogTitle }) {
                       <MenuItem value={field.option2}>{field.option2}</MenuItem>
                     </Select>
                   </FormControl>
+                ):field.type === "image" ? (
+                  <input
+                    accept="image/*"
+                    type="file"
+                    onChange={(e) => handleImageChange(e)}
+                   
+                    id="imageInput"
+                  />
                 ) : (
                   <TextField
                     label={field.label}

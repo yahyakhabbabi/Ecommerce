@@ -21,7 +21,7 @@ import { CSVLink } from "react-csv";
 import Modals from "./Modals";
 import ModalsDelete from "./ModalsDelete";
 import { Link } from "react-router-dom";
-import DownloadIcon from '@mui/icons-material/Download';
+import DownloadIcon from "@mui/icons-material/Download";
 
 const DataTable = ({
   data,
@@ -32,6 +32,7 @@ const DataTable = ({
   column,
   dialogTitle,
   tableType,
+  tableName,
 }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -79,7 +80,7 @@ const DataTable = ({
     onSave(data);
     closeModal();
   };
-  
+
   return (
     <Paper sx={{ width: "98%", overflow: "hidden", padding: "12px" }}>
       <Typography
@@ -110,21 +111,34 @@ const DataTable = ({
             variant="contained"
             endIcon={<AddCircleIcon />}
             onClick={openModal}
-            sx={{ backgroundColor: '#282c34', color: 'white',  '&:hover': {
-              backgroundColor: '#282c34', 
-            } }} 
+            sx={{
+              backgroundColor: "#282c34",
+              color: "white",
+              "&:hover": {
+                backgroundColor: "#282c34",
+              },
+            }}
           >
             Add
           </Button>
         )}
-        <Button variant="contained"
-        endIcon={<DownloadIcon />}
-        sx={{ backgroundColor: '#282c34', color: 'white',  '&:hover': {
-          backgroundColor: '#282c34', 
-        } }} >
-        <CSVLink data={data} style={{ textDecoration: 'none', color: 'white' }}>export</CSVLink>
-
-
+        <Button
+          variant="contained"
+          endIcon={<DownloadIcon />}
+          sx={{
+            backgroundColor: "#282c34",
+            color: "white",
+            "&:hover": {
+              backgroundColor: "#282c34",
+            },
+          }}
+        >
+          <CSVLink
+            data={data}
+            style={{ textDecoration: "none", color: "white" }}
+          >
+            export
+          </CSVLink>
         </Button>
       </Stack>
       <Box height={20} />
@@ -182,14 +196,21 @@ const DataTable = ({
                             />
                           </svg>
                         </div>
+                      ) : column.type === "Image" ? (
+                        <img
+                          src={item[column.field]} // Assuming the URL is in the column.field
+                          alt="Product"
+                          style={{ width: "50px", height: "50px" }}
+                        />
                       ) : (
                         item[column.field]
                       )}
                     </TableCell>
                   ))}
+
                   <TableCell align="left">
                     <Stack spacing={2} direction="row">
-                    <Link to={`/v1/users/${item._id}`}>
+                      <Link to={`/v1/${tableName}/${item._id}`}>
                         <Button
                           variant="outlined"
                           startIcon={<EditIcon />}

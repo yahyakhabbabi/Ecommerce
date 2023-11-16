@@ -11,7 +11,7 @@ import "./users.css";
 export default function UsersTable() {
   const authContext = useContext(AuthContext);
   const { authTokens } = authContext;
-
+  const tableName = "users"
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -36,7 +36,7 @@ export default function UsersTable() {
     } catch (error) {
       setError("Error: " + error.message);
       setIsLoading(false);
-      setOpenError(true); // Open error modal
+      setOpenError(true); 
     }
   }, [authTokens]);
 
@@ -94,16 +94,14 @@ export default function UsersTable() {
       if (response.status === 200) {
         setUsers(users.filter((user) => user._id !== id));
         setSuccessMessage("User deleted successfully");
-        setOpenSuccess(true); // Open success modal
-
-        // Clear success message after 3 seconds
+        setOpenSuccess(true); 
         setTimeout(() => {
           setSuccessMessage(null);
-          setOpenSuccess(false); // Close success modal
+          setOpenSuccess(false);
         }, 3000);
       } else {
         setError("Failed to delete user");
-        setOpenError(true); // Open error modal
+        setOpenError(true); //
 
         // Clear error message after 3 seconds
         setTimeout(() => {
@@ -207,6 +205,7 @@ export default function UsersTable() {
           title="Users List"
           onSave={handleSave}
           dialogTitle="Create User"
+          tableName={tableName}
         />
       )}
     </Box>

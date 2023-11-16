@@ -1,43 +1,140 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useContext } from "react";
 import axios from "axios";
 import DataTable from "../../../components/DataTable";
+import AuthContext from "../../../context/AuthContext";
+import Alert from "@mui/material/Alert";
+import Box from "@mui/material/Box";
+import Modal from "@mui/material/Modal";
+import Fade from "@mui/material/Fade";
 
 export default function CustomerTable() {
+  const tableName = "customers";
+  const authContext = useContext(AuthContext);
+  const { authTokens } = authContext;
   const [customers, setCustomers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [openSuccess, setOpenSuccess] = useState(false);
+  const [openError, setOpenError] = useState(false);
+
+  const fetchData = useCallback(async () => {
+    try {
+      const response = await axios.get("http://localhost:3000/v1/customers", {
+        headers: {
+          Authorization: `Bearer ${authTokens?.access_token}`,
+        },
+      });
+      if (response.status === 200) {
+        setCustomers(response.data);
+        setIsLoading(false);
+      } else {
+        throw new Error("Failed to fetch user data.");
+      }
+    } catch (error) {
+      setError("Error: " + error.message);
+      setIsLoading(false);
+      setOpenError(true);
+    }
+  }, [authTokens]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("http://localhost:3000/v1/customers");
-        if (response.status === 200) {
-          setCustomers(response.data);
-          setIsLoading(false);
-        } else {
-          setError("Failed to fetch customer data.");
-          setIsLoading(false);
-        }
-      } catch (error) {
-        setError("Error: " + error.message);
-        setIsLoading(false);
-      }
-    };
-
     fetchData();
-  }, []);
+  }, [fetchData, authTokens]);
 
-  const deleteCustomer = (id) => {
-    // Implement delete logic here
+  const clearError = () => {
+    setError(null);
   };
-  const handleSave = (data) => {
-    // Implement save logic here for the data received from the modal
-    // You can use the 'data' parameter to access the form input values
-    console.log("Received data from modal:", data);
+
+  const handleDeleteCustomer = async (id) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:3000/v1/customers/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${authTokens?.access_token}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        setCustomers(customers.filter((customer) => customer._id !== id));
+        setSuccessMessage("User deleted successfully");
+        setOpenSuccess(true);
+
+        setTimeout(() => {
+          setSuccessMessage(null);
+          setOpenSuccess(false);
+        }, 3000);
+      } else {
+        throw new Error("Failed to delete user");
+      }
+    } catch (error) {
+      setError("Error: " + error.message);
+      setOpenError(true);
+
+      setTimeout(() => {
+        clearError();
+        setOpenError(false);
+      }, 3000);
+    }
   };
 
   return (
-    <>
+    <Box display="flex" flexDirection="column" alignItems="center">
+      <Modal
+        open={openSuccess}
+        onClose={() => setOpenSuccess(false)}
+        closeAfterTransition
+      >
+        <Fade in={openSuccess}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "100vh",
+            }}
+          >
+            <Alert
+              severity="success"
+              onClose={() => {
+                setSuccessMessage(null);
+                setOpenSuccess(false);
+              }}
+              sx={{ width: "80%" }}
+            >
+              {successMessage}
+            </Alert>
+          </Box>
+        </Fade>
+      </Modal>
+      <Modal
+        open={openError}
+        onClose={() => setOpenError(false)}
+        closeAfterTransition
+      >
+        <Fade in={openError}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "100vh",
+            }}
+          >
+            <Alert
+              severity="error"
+              onClose={() => {
+                clearError();
+                setOpenError(false);
+              }}
+              sx={{ width: "80%" }}
+            >
+              Error: {error}
+            </Alert>
+          </Box>
+        </Fade>
+      </Modal>
       {isLoading && <p>Loading...</p>}
       {error && <p>Error: {error}</p>}
       {!isLoading && !error && customers.length > 0 && (
@@ -47,21 +144,21 @@ export default function CustomerTable() {
             { field: "firstName", label: "First Name" },
             { field: "lastName", label: "Last Name" },
             { field: "email", label: "Email" },
-            { field: "valid_account", label: "Valid account",type:"Booleen" },
+            { field: "valid_account", label: "Valid account", type: "Booleen" },
           ]}
           column={[
             { field: "firstName", label: "First Name" },
             { field: "lastName", label: "Last Name" },
-            { field: "email", label: "Email",type:"email" },
-            { field: "password", label: "password",type:"password" },
+            { field: "email", label: "Email" },
+            { field: "valid_account", label: "Valid account", type: "Boolean" },
           ]}
-          onDelete={deleteCustomer}
+          onDelete={handleDeleteCustomer}
           title="Customers List"
-          onSave={handleSave}
           dialogTitle="Create Customer"
           tableType="customer"
+          tableName={tableName}
         />
       )}
-    </>
+    </Box>
   );
 }
