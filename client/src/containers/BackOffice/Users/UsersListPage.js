@@ -8,10 +8,15 @@ import Copyright from "../../../components/Footer";
 // import Card from "@mui/material/Card";
 // import CardContent from "@mui/material/CardContent";
 import "../Dashboard/dash.css";
+import { useEffect, useState } from "react";
+import axios from 'axios';
 import UsersTable from "./UsersTable";
-// import useRefreshToken from "../../../hooks/useRefreshToken";
+import useRefreshToken from "../../../hooks/useRefreshToken";
 
 export default function UsersListPage() {
+  const [users, setUsers] = useState();
+  const refresh = useRefreshToken();
+  
   return (
     <div className="bgcolor">
       <Navbar />

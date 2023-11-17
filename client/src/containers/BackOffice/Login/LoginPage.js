@@ -57,7 +57,7 @@ export default function LoginPage() {
   }
 
   return (
- 
+    <div className='principalDiv'>
     <section className='container'>
     <p ref={errRef} className={ErrMsg ? "errmsg" : "offscreen"} aria-live='assertive'>{ErrMsg}</p>
     <form onSubmit={handleSubmit}>
@@ -87,7 +87,8 @@ export default function LoginPage() {
         <button>LOG IN</button>
       </div>
     </form>
-  </section>
+    </section>
+    </div> 
       )}
 
 
