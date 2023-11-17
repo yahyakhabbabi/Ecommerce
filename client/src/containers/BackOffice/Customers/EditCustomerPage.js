@@ -1,12 +1,15 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback,useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import MiniDrawer from '../../../components/Sidnevbar';
 import Box from '@mui/material/Box';
 import Navbar from '../../../components/Navbar';
 import EditDetails from '../../../components/EditDetails';
+import AuthContext from "../../../context/AuthContext";
 import axios from 'axios';
 
 export default function EditCustomerPage() {
+  const authContext = useContext(AuthContext);
+  const { authTokens } = authContext;
   const { id } = useParams();
   const [customerData, setCustomerData] = useState({});
   const [error, setError] = useState(null);
@@ -15,12 +18,16 @@ export default function EditCustomerPage() {
 
   const fetchCustomerData = useCallback(async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/v1/customers/${id}`);
+      const response = await axios.get(`http://localhost:3000/v1/customers/${id}`, {
+        headers: {
+          Authorization: `Bearer ${authTokens?.access_token}`,
+        },
+      });
       setCustomerData(response.data);
     } catch (error) {
       setError("Error fetching customer data: " + error.message);
     }
-  }, [id]);
+  }, [authTokens,id]);
 
   useEffect(() => {
     fetchCustomerData();

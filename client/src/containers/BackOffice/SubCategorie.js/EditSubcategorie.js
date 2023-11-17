@@ -1,12 +1,15 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback,useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import MiniDrawer from '../../../components/Sidnevbar';
 import Box from '@mui/material/Box';
 import Navbar from '../../../components/Navbar';
 import EditDetails from '../../../components/EditDetails';
+import AuthContext from "../../../context/AuthContext";
 import axios from 'axios';
 
 export default function EditsubCategoriePage() {
+  const authContext = useContext(AuthContext);
+  const { authTokens } = authContext;
   const { id } = useParams();
   const [subcategorieData, setsubCategorieData] = useState({});
   const [error, setError] = useState(null);
@@ -15,12 +18,16 @@ export default function EditsubCategoriePage() {
 
   const fetchsubCategorieData = useCallback(async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/v1/Subcategories/${id}`);
+      const response = await axios.get(`http://localhost:3000/v1/Subcategories/${id}`, {
+        headers: {
+          Authorization: `Bearer ${authTokens?.access_token}`,
+        },
+      });
       setsubCategorieData(response.data);
     } catch (error) {
       setError("Error fetching customer data: " + error.message);
     }
-  }, [id]);
+  }, [authTokens,id]);
 
   useEffect(() => {
     fetchsubCategorieData();
@@ -28,7 +35,11 @@ export default function EditsubCategoriePage() {
 
   const handleUpdate = async (changedFields) => {
     try {
-      await axios.put(`http://localhost:3000/v1/Subcategories/${id}`, changedFields);
+      await axios.put(`http://localhost:3000/v1/Subcategories/${id}`, changedFields, {
+        headers: {
+          Authorization: `Bearer ${authTokens?.access_token}`,
+        },
+      });
       // Handle success
       setIsModalOpen(true);
       setTimeout(() => {

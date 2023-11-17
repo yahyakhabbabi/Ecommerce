@@ -16,6 +16,7 @@ import EditCategoriePage from "./containers/BackOffice/Categorie.js/EditCategori
 import EditsubCategoriePage from "./containers/BackOffice/SubCategorie.js/EditSubcategorie";
 import EditProductsPage from "./containers/BackOffice/Products/EditProductPage";
 import EditOrderPage from "./containers/BackOffice/Orders/EditOrder";
+import UserProfilePage from "./containers/BackOffice/Users/UserProfilePage";
 function App() {
   return (
     <div className="App">
@@ -24,11 +25,11 @@ function App() {
           <Route index element={<LoginPage />} />
           <Route element={<PrivateRoutes/>}>
           <Route path="/dashboard" element={<DashboardPage />} exact/>
+          <Route path="/profile" element={<UserProfilePage />} exact/>
           <Route path="/v1/users" element={<UsersListPage />} exact/>
           <Route path="/v1/users/:id" element={<EditUserPage />} exact/>
           <Route path="/v1/customers/:id" element={<EditCustomerPage />} exact/>
-          <Route path="/v1/customers" element={<CustomersListPage />}exact>
-          </Route>
+          <Route path="/v1/customers" element={<CustomersListPage />}exact/>
           <Route path="/v1/products" element={<ProductsListPage />} exact/>
           <Route path="/v1/products/:id" element={<EditProductsPage />} exact/>
           <Route path="/v1/orders" element={<OrdersPage />} exact/>

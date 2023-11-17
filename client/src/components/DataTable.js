@@ -86,7 +86,7 @@ const DataTable = ({
       <Typography
         variant="h5"
         component="div"
-        sx={{ padding: "20px", textAlign: "left" }}
+        sx={{ padding: "7px", textAlign: "left" }}
       >
         {title}
       </Typography>
@@ -143,7 +143,7 @@ const DataTable = ({
       </Stack>
       <Box height={20} />
       <TableContainer>
-        <Table sx={{ minWidth: 650 }}>
+        <Table sx={{ minWidth: 500, maxHeight: 100 }}>
           <TableHead>
             <TableRow>
               {columns.map((column) => (
@@ -151,8 +151,8 @@ const DataTable = ({
                   align="left"
                   key={column.field}
                   sx={{
-                    background: "#282c34",
-                    color: "white",
+                    background: "var(--body_background1)",
+                    color: "var(--body_color)",
                     fontWeight: "bold",
                   }}
                 >
@@ -162,7 +162,7 @@ const DataTable = ({
               <TableCell
                 align="left"
                 sx={{
-                  background: "#282c34",
+                  background: "var(--body_background1)",
                   color: "white",
                   fontWeight: "bold",
                 }}

@@ -56,6 +56,7 @@ export default function ProductsTable() {
       const response = await axios.post("http://localhost:3000/v1/products", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${authTokens?.access_token}`,
         },
       });
   

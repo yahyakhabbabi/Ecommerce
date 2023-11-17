@@ -1,7 +1,8 @@
 :root {
-    --body_background1: #eceff1;
+    --body_background1:white ;
     --body_color: black;
     --body_link: navy;
+    /* eceff1 */
   }
   
   [data-theme="dark"] {
