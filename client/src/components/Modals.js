@@ -58,7 +58,6 @@ export default function Modals({ modal, toggle, save, fields, dialogTitle }) {
             {fields.map((field) => (
               <Grid item xs={fields.length === 1 ? 12 : fields.length <= 8 ? 6 : 4} key={field.field}>
                 {field.type === "email" ? (
-                  // Handle email input
                   <TextField
                     label={field.label}
                     variant="outlined"

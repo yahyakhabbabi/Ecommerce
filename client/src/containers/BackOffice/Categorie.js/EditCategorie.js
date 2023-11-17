@@ -1,12 +1,15 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import MiniDrawer from '../../../components/Sidnevbar';
 import Box from '@mui/material/Box';
 import Navbar from '../../../components/Navbar';
 import EditDetails from '../../../components/EditDetails';
+import AuthContext from "../../../context/AuthContext";
 import axios from 'axios';
 
 export default function EditCategoriePage() {
+  const authContext = useContext(AuthContext);
+  const { authTokens } = authContext;
   const { id } = useParams();
   const [categorieData, setCategorieData] = useState({});
   const [error, setError] = useState(null);
@@ -15,12 +18,16 @@ export default function EditCategoriePage() {
 
   const fetchCategorieData = useCallback(async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/v1/categories/${id}`);
+      const response = await axios.get(`http://localhost:3000/v1/categories/${id}`, {
+        headers: {
+          Authorization: `Bearer ${authTokens?.access_token}`,
+        },
+      });
       setCategorieData(response.data);
     } catch (error) {
       setError("Error fetching customer data: " + error.message);
     }
-  }, [id]);
+  }, [authTokens,id]);
 
   useEffect(() => {
     fetchCategorieData();
@@ -28,15 +35,17 @@ export default function EditCategoriePage() {
 
   const handleUpdate = async (changedFields) => {
     try {
-      await axios.put(`http://localhost:3000/v1/categories/${id}`, changedFields);
-      // Handle success
+      await axios.put(`http://localhost:3000/v1/categories/${id}`, changedFields,{
+        headers: {
+          Authorization: `Bearer ${authTokens?.access_token}`,
+        },
+      });
       setIsModalOpen(true);
       setTimeout(() => {
         setIsModalOpen(false);
       }, 3000);
     } catch (error) {
       setError('Error updating categorie data: ' + error.message);
-      // Handle error, e.g., open modal with error message
       setIsModalOpen(true);
       setTimeout(() => {
         setIsModalOpen(false);
@@ -44,7 +53,6 @@ export default function EditCategoriePage() {
     }}
 
   const handleCloseModal = () => {
-    // Handle modal close, e.g., update state, navigate to another page, etc.
     console.log('Modal closed');
     setIsModalOpen(false);
   };

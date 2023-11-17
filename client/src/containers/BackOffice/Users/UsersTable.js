@@ -65,7 +65,7 @@ export default function UsersTable() {
         fetchData();
       })
       .catch((error) => {
-        setError("Error: " + error.message);
+        setError("Error: " + error.response.data.message);
         console.error("Error saving user data:", error);
         setOpenError(true); // Open error modal
 
@@ -110,7 +110,8 @@ export default function UsersTable() {
         }, 3000);
       }
     } catch (error) {
-      setError("Error: " + error.message);
+      console.log(error)
+      setError("Error: " + error.response.data.message);
       setOpenError(true); // Open error modal
 
       // Clear error message after 3 seconds

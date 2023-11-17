@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext } from 'react';
+import React, { useRef, useContext } from 'react';
 import './login.css';
 import AuthContext from '../../../context/AuthContext';
 
@@ -6,8 +6,7 @@ export default function LoginPage() {
   const userRef = useRef();
   const pwdRef = useRef();
   const errRef = useRef();
-  const [ErrMsg, setErrMsg] = useState('');
-  const { loginUser } = useContext(AuthContext);
+  const { loginUser, errMsg } = useContext(AuthContext);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -19,15 +18,14 @@ export default function LoginPage() {
       });
     } catch (error) {
       console.error('Error during login:', error);
-      setErrMsg('Invalid username or password');
     }
   };
 
   return (
     <section className='body1'>
       <div className="container">
-        <p ref={errRef} className={ErrMsg ? 'errmsg' : 'offscreen'} aria-live="assertive">
-          {ErrMsg}
+        <p ref={errRef} className={errMsg ? 'errmsg' : 'offscreen'} aria-live="assertive">
+          {errMsg}
         </p>
 
         <form onSubmit={handleLogin}>

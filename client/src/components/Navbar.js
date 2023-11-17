@@ -9,9 +9,10 @@ import MenuIcon from '@mui/icons-material/Menu';
 import LogoutIcon from '@mui/icons-material/Logout';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import DarkMode from './DarkMode/DarkMode';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,Link } from 'react-router-dom';
 import { useBearStore } from './appStore';
-import AuthContext from '../context/AuthContext';  // Replace with the actual path
+import AuthContext from '../context/AuthContext'; 
+import { Avatar,  Tooltip } from '@mui/material';
 
 const AppBar = styled(MuiAppBar, {
 })(({ theme }) => ({
@@ -31,11 +32,12 @@ const toggleFullScreen = () => {
 };
 
 export default function Navbar() {
+  const authContext = useContext(AuthContext);
+  const { user } = authContext;
   const navigate = useNavigate();
   const updateOpen = useBearStore((state) => state.updateOpen);
   const dopen = useBearStore((state) => state.dopen);
 
-  const authContext = useContext(AuthContext);
 
   const handleLogout = () => {
     authContext.logoutUser();
@@ -79,6 +81,13 @@ export default function Navbar() {
             >
               <FullscreenIcon />
             </IconButton>
+          </Box>
+          <Box sx={{ flexGrow: 0 }}>
+            <Tooltip title="Open settings">
+             <Link to="/profile"> <IconButton  sx={{ p: 0 }}>
+                <Avatar alt="Remy Sharp" src={user.userImage} />
+              </IconButton></Link>
+            </Tooltip>
           </Box>
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <IconButton

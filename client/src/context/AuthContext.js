@@ -20,13 +20,16 @@ export const AuthProvider = ({ children }) => {
   );
   const [loading, setLoading] = useState(true);
   const [refreshingTokens, setRefreshingTokens] = useState(false);
+  const [errMsg, setErrMsg] = useState(false);
 
   const navigate = useNavigate();
 
   const logoutUser = useCallback(() => {
     setAuthTokens(null);
     setUser(null);
+    
     localStorage.removeItem('authTokens');
+    
     navigate('/');
   }, [setAuthTokens, setUser, navigate]);
 
@@ -58,24 +61,26 @@ export const AuthProvider = ({ children }) => {
         user_name: username,
         password: password,
       });
-
+      
       if (response.status === 201) {
         const data = response.data.token;
 
-        const { access_token, refresh_token, role } = data;
-
+        const { access_token, refresh_token,role,userImage,firstName } = data;
+      
         const decodedUser = jwtDecode(access_token);
 
         setAuthTokens({ access_token, refresh_token });
-        setUser({ ...decodedUser, role });
+        setUser({ ...decodedUser, role,userImage,firstName });
         localStorage.setItem('authTokens', JSON.stringify({ access_token, refresh_token }));
 
         navigate('/dashboard');
       } else {
-        alert('Something went wrong!');
+       const errorMessage = response.data.message; 
+        setErrMsg(errorMessage || 'Something went wrong!');
       }
     } catch (error) {
       console.error('Error during login:', error);
+      setErrMsg(error.response.data.message || 'Something went wrong!');
     }
   };
 
@@ -84,7 +89,7 @@ export const AuthProvider = ({ children }) => {
       if (authTokens) {
         const user = jwtDecode(authTokens.access_token);
         const isExpired = dayjs.unix(user.exp).diff(dayjs()) < 1;
-
+        console.log(user)
         try {
           if (isExpired && authTokens.refresh_token) {
             if (!refreshingTokens) {
@@ -117,6 +122,7 @@ export const AuthProvider = ({ children }) => {
     setUser: setUser,
     loginUser: loginUser,
     logoutUser: logoutUser,
+    errMsg:errMsg
   };
 
   return (
