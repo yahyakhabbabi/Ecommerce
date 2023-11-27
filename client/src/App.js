@@ -1,3 +1,4 @@
+
 import { Route, Routes } from "react-router-dom";
 import UsersListPage from "./containers/BackOffice/Users/UsersListPage";
 // import AddNewUserPage from "./containers/BackOffice/Users/AddNewUserPage";
@@ -17,10 +18,13 @@ import EditsubCategoriePage from "./containers/BackOffice/SubCategorie.js/EditSu
 import EditProductsPage from "./containers/BackOffice/Products/EditProductPage";
 import EditOrderPage from "./containers/BackOffice/Orders/EditOrder";
 import UserProfilePage from "./containers/BackOffice/Users/UserProfilePage";
+
 function App() {
   return (
+
     <div className="App">
       <Routes>
+
        
           <Route index element={<LoginPage />} />
           <Route element={<PrivateRoutes/>}>
@@ -41,6 +45,7 @@ function App() {
           <Route path="/payements" element={<PaymentsListPage />} exact/>
           </Route>
       </Routes>
+
     </div>
   );
 }
