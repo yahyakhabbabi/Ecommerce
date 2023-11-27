@@ -1,21 +1,14 @@
-import React, { useState } from 'react';
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Button,
-  TextField,
-  Select,
-} from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import './users.css';
-import DeleteUser from './DeleteUser';
-import EditUserPage from './EditUserPage';
-import AddUserPage from './AddUserPage';
+
+import React from "react";
+import MiniDrawer from "../../../components/Sidnevbar";
+import Box from "@mui/material/Box";
+import Navbar from "../../../components/Navbar";
+import Copyright from "../../../components/Footer";
+
+import "../Dashboard/dash.css";
+import UsersTable from "./UsersTable";
+// import useRefreshToken from "../../../hooks/useRefreshToken";
+
 
 export default function UsersListPage() {
   const columns = [
@@ -106,54 +99,19 @@ export default function UsersListPage() {
   };
 
   return (
-    <div>
-      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px', marginTop: '12px' }}>
-        <TextField
-          label="Search"
-          variant="outlined"
-          fullWidth
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-          size="small"
-          style={{ marginRight: '8px', marginLeft: '8px' }}
-        />
-        <Button
-          variant="outlined"
-          onClick={handleAddUser}
-          style={{ width: '20%', background: 'blue', color: 'white' }}
-        >
-          Add User
-        </Button>
-      </div>
 
-      <DataGrid
-        rows={filteredRows}
-        columns={columns}
-        disableSelectionOnClick
-        pageSize={5}
-        checkboxSelection
-      />
+    <div className="bgcolor">
+      <Navbar />
 
-      <EditUserPage
-        isOpen={isEditDialogOpen}
-        onClose={() => setEditDialogOpen(false)}
-        onSave={handleSaveEdit}
-        initialUsername={userToEdit ? userToEdit.username : ''}
-        initialEmail={userToEdit ? userToEdit.email : ''}
-      />
+      <Box height={60} />
+      <Box sx={{ display: "flex" }}>
+        <MiniDrawer />
+        <Box component="main" sx={{ flexGrow: 1, p: 2 }}>
+       
+                  <UsersTable />
+        </Box>
+      </Box>
+      <Copyright />
 
-      <DeleteUser
-        isOpen={isDeleteDialogOpen}
-        onClose={() => setDeleteDialogOpen(false)}
-        onConfirmDelete={handleDeleteUser}
-        username={userToDelete ? userToDelete.username : ''}
-      />
-
-      <AddUserPage
-        isOpen={isAddUserDialogOpen}
-        onClose={() => setAddUserDialogOpen(false)}
-        onSave={handleSaveNewUser}
-      />
-    </div>
   );
 }

@@ -13,20 +13,21 @@ const {
     deletecustomerValidator
 }=require('../utils/validator/customerValidator')
 
-router.post('/login',postloginCustomerValidator,customerController.login);
+router.post('/login',/* postloginCustomerValidator */customerController.login);
 router.post('/',postCreateCustomerValidator,/* verifyJWT(JWT_SECRET_customer), */customerController.createCustomer);
-router.put('/validate/:id',postValidateCustomerValidator,customerController.validateCustomer);
-router.get('/',verifyJWT(JWT_SECRET),isAdminOrManager,(req,res,next)=>{
+router.get('/validate/:id',/* postValidateCustomerValidator */customerController.validateCustomer);
+router.get('/'/* ,verifyJWT(JWT_SECRET),isAdminOrManager */,(req,res,next)=>{
     if(Object.keys(req.query).length>2){
         customerController.searchCustomer(req, res, next);
     }else{
         customerController.getAllCustomer(req, res, next);
     }
 });
-router.get('/:id([0-9a-fA-F]{24})',getCustomerValidator,verifyJWT(JWT_SECRET),isAdminOrManager,customerController.getCustomerById);
-router.put('/:id',putUpdateCustomer,verifyJWT(JWT_SECRET),isAdminOrManager,customerController.updateCustomer);
+router.get('/:id([0-9a-fA-F]{24})'/* ,getCustomerValidator,verifyJWT(JWT_SECRET),isAdminOrManager */,customerController.getCustomerById);
+router.put('/:id'/* ,putUpdateCustomer,verifyJWT(JWT_SECRET),isAdminOrManager */,customerController.updateCustomer);
 router.delete('/delete',verifyJWT(JWT_SECRET_customer),customerController.deleteCustomer);
 router.get('/profile',verifyJWT(JWT_SECRET_customer),customerController.customerProfile);
 router.patch('/profile/update',verifyJWT(JWT_SECRET_customer),customerController.updateDataCustomer);
+router.post("/refresh",customerController.refresh)
 
 module.exports=router;

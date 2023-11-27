@@ -3,7 +3,6 @@ const { JWT_SECRET, Refresh_JWT_SECRET } = require("../config/env");
 const jwt = require("jsonwebtoken");
 const emailSender = require("../config/emailSender");
 const bcrypt = require("bcrypt");
-
 exports.login = async function (req, res, next) {
   const { user_name, password } = req.body;
 
@@ -11,7 +10,7 @@ exports.login = async function (req, res, next) {
     const user = await Users.findOne({ user_name });
 
     if (!user) {
-      const error = new Error("user not found");
+      const error = new Error("User not found");
       error.statusCode = 404;
       throw error;
     }
@@ -25,7 +24,7 @@ exports.login = async function (req, res, next) {
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      const error = new Error("wrong password");
+      const error = new Error("Wrong password");
       error.statusCode = 401;
       throw error;
     }
@@ -33,26 +32,32 @@ exports.login = async function (req, res, next) {
     user.last_login = new Date();
 
     const accessToken = jwt.sign(
-      { id: user._id, username: user.user_name, role: user.role, type: "user" },
+      { id: user._id, username: user.user_name, role: user.role, userImage:user.userImage,firstName:user.firstName,lastName:user.lastName,email:user.email,type:"user" },
       JWT_SECRET,
       { expiresIn: "1h" }
     );
 
     const refreshToken = jwt.sign(
-      { id: user._id, username: user.user_name, role: user.role, type: "user" },
+      { id: user._id, username: user.user_name, role: user.role,userImage:user.userImage,firstName:user.firstName,lastName:user.lastName,email:user.email,type: "user" },
       Refresh_JWT_SECRET,
       { expiresIn: "7d" }
     );
 
-    user.refreshToken = refreshToken;
     await user.save();
+    
     res.status(201).json({
       message: "User login!",
       token: {
         access_token: accessToken,
         token_type: "Bearer",
-        expires_in: "1 hour",
+        expires_in: "10s",
         refresh_token: refreshToken,
+        role:user.role, 
+        username:user.username,
+        firstName:user.firstName,
+        email:user.email,
+        userImage:user.userImage,
+        lastName:user.lastName
       },
     });
   } catch (err) {
@@ -62,9 +67,11 @@ exports.login = async function (req, res, next) {
     next(err);
   }
 };
+
 exports.addUsers = async function (req, res, next) {
   try {
     const { user_name, firstName, lastName, email, role, password } = req.body;
+    const userImage = req.file ? req.file.path : null;
     const [existingUsername, existingEmail] = await Promise.all([
       Users.findOne({ user_name }),
       Users.findOne({ email }),
@@ -92,6 +99,7 @@ exports.addUsers = async function (req, res, next) {
 
     const user = new Users({
       user_name,
+      userImage,
       password: hashedPassword,
       firstName,
       lastName,
@@ -199,9 +207,9 @@ exports.UpdateUser = async function (req, res, next) {
 
       const user = await Users.findOne({ _id: id });
 
-      // if (!user) {
-      //   return res.status(404).json("User not found");
-      // }
+      if (!user) {
+        return res.status(404).json("User not found");
+      }
 
       const [existingUsername, existingEmail] = await Promise.all([
         Users.findOne({ _id: id, user_name: user_name }),
@@ -225,6 +233,7 @@ exports.UpdateUser = async function (req, res, next) {
         lastName: lastName,
         email: email,
         role: role,
+        user_name: user_name,
         active: active,
         updatedAt: new Date(),
       };
@@ -263,4 +272,34 @@ exports.DeleteUser = async function (req, res, next) {
     }
     next(err);
   }
+};
+exports.refresh = async function (req, res) {
+  const refreshToken = req.body.refresh_token;
+  console.log(refreshToken);
+
+  if (!refreshToken) {
+    return res.status(401).json("You are not authenticated");
+  }
+
+  jwt.verify(refreshToken, Refresh_JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(403).json("Refresh token is not valid!");
+    }
+
+    const accessToken = jwt.sign(
+      { id: decoded.id, username: decoded.username, role: decoded.role, type: "user" },
+      JWT_SECRET,
+      { expiresIn: "10s" }
+    );
+
+
+
+    res.status(200).json({
+      token: {
+        access_token: accessToken,
+        token_type: "Bearer",
+        expires_in: "10s",
+      },
+    });
+  });
 };

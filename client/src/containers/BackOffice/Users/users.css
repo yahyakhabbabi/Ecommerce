@@ -1,19 +1,21 @@
-.userListEdit{
-    border: none;
-    border-radius: 10px;
-    padding: 5px 10px;
-    background-color: #3bb078;
-    color: white;
-    cursor: pointer;
-    margin-right: 20px;
-}
 
-.userListDelete{
-    border: none;
-    border-radius: 10px;
-    padding: 5px 10px;
+/* styles.css */
+.success-message {
+    background-color: green;
+    color: white;
+    font-weight: bold;
+    padding: 6px;
+    margin: 9px 0;
+    width: 89vw
+  }
+  
+  .error-message {
     background-color: red;
     color: white;
-    cursor: pointer;
-}
+    font-weight: bold;
+    padding: 6px;
+    margin: 9px 0;
+    width: 89vw
+  }
+  
 

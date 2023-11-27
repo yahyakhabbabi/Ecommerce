@@ -11,8 +11,8 @@ const {
 } = require('../utils/validator/orderValidator'); 
 
 router.post('/',postCreateOrderValidator,verifyJWT(JWT_SECRET_customer),orderController.createOrder);
-router.get('/',verifyJWT(JWT_SECRET),isAdminOrManager,orderController.allOrders);
-router.get('/:id',getOrderValidator,verifyJWT(JWT_SECRET),isAdminOrManager,orderController.orderById);
-router.put('/:id',putOrderValidator,verifyJWT(JWT_SECRET),isAdminOrManager,orderController.updateOrder)
+router.get('/'/* ,verifyJWT(JWT_SECRET),isAdminOrManager */,orderController.allOrders);
+router.get('/:id',/* getOrderValidator,verifyJWT(JWT_SECRET),isAdminOrManager, */orderController.orderById);
+router.put('/:id',/* putOrderValidator,verifyJWT(JWT_SECRET),isAdminOrManager, */orderController.updateOrder)
 
 module.exports=router;

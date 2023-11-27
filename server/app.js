@@ -4,6 +4,7 @@ const express = require("express");
 const bodyparser = require("body-parser");
 const app = express();
 const morgan = require("morgan");
+const cors = require("cors"); 
 
 //importation des routes
 const apiRoutes = require("../server/routes/api");
@@ -14,6 +15,15 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: false }));
+const corsOptions = {
+    origin: 'http://localhost:3001', // Replace with the allowed origin
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    preflightContinue: false,
+  
+  };
+  
+  app.use(cors(corsOptions));
+  
 
 //app.use for the API i create
 
