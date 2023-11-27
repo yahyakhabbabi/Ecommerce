@@ -39,13 +39,13 @@ exports.login = async function (req, res, next) {
     customer.last_login = new Date();
 
     const accessToken = jwt.sign(
-      { id: customer._id, email: customer.email, type: "customer" },
+      { id: customer._id, email: customer.email,firstName:customer.firstName,lastName:customer.lastName, type: "customer" },
       JWT_SECRET_customer,
       { expiresIn: "1d" }
     );
 
     const refreshToken = jwt.sign(
-      { id: customer._id, email: customer.email, type: "customer" },
+      { id: customer._id, email: customer.email,firstName:customer.firstName,lastName:customer.lastName, type: "customer" },
       Refresh_JWT_SECRET_customer,
       { expiresIn: "7d" }
     );
@@ -134,6 +134,7 @@ exports.validateCustomer = async function (req, res, next) {
     }
 
     await customer.updateOne({ valid_account: true });
+    return res.redirect('http://localhost:3001/landing');
     res.status(201).json("your email is validate avec success");
   } catch (err) {
     if (!err.statusCode) {
@@ -141,7 +142,6 @@ exports.validateCustomer = async function (req, res, next) {
     }
     next(err);
   }
-  // return res.redirect('http://localhost:3000/v1/customers/login');
 };
 exports.getAllCustomer = async function (req, res, next) {
   try {
@@ -250,7 +250,7 @@ exports.updateCustomer = async function (req, res, next) {
     next(err);
   }
 };
-exports.deleteCustomer = async function (req, res) {
+exports.deleteCustomer = async function (req, res,next) {
   try {
     const { id } = req.customer;
     const customer = await Customers.findOne({ _id: id });
@@ -271,7 +271,7 @@ exports.deleteCustomer = async function (req, res) {
     next(err);
   }
 };
-exports.customerProfile = async function (req, res) {
+exports.customerProfile = async function (req, res ,next) {
   try {
     const { id } = req.customer;
     const customer = await Customers.findOne({ _id: id });
@@ -289,7 +289,7 @@ exports.customerProfile = async function (req, res) {
     next(err);
   }
 };
-exports.updateDataCustomer = async function (req, res) {
+exports.updateDataCustomer = async function (req, res,next) {
   try {
     const { id } = req.customer;
     if (id) {
@@ -325,4 +325,34 @@ exports.updateDataCustomer = async function (req, res) {
     }
     next(err);
   }
+};
+exports.refresh = async function (req, res) {
+  const refreshToken = req.body.refresh_token;
+  console.log(refreshToken);
+
+  if (!refreshToken) {
+    return res.status(401).json("You are not authenticated");
+  }
+
+  jwt.verify(refreshToken, Refresh_JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(403).json("Refresh token is not valid!");
+    }
+
+    const accessToken = jwt.sign(
+      { id: customer._id, email: customer.email,firstName:customer.firstName,lastName:customer.lastName,type: "customer" },
+      JWT_SECRET_customer,
+      { expiresIn: "1d" }
+    );
+
+
+
+    res.status(200).json({
+      token: {
+        access_token: accessToken,
+        token_type: "Bearer",
+        expires_in: "10s",
+      },
+    });
+  });
 };

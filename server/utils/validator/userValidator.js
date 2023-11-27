@@ -9,11 +9,7 @@ exports.postloginUserValidator = [
     .withMessage("Enter a string for the username"),
   check("password")
     .notEmpty()
-    .isStrongPassword()
-    .withMessage("Password is required")
-    .withMessage(
-      "Weak password, It should  Be at least 8 characters long. Include a combination of uppercase letters, lowercase letters, numbers, and special characters. Avoid common words, phrases, or easily guessable information"
-    ),
+    .withMessage("Password is required"),
   validatorMiddleware,
 ];
 

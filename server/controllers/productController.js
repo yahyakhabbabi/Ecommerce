@@ -1,4 +1,5 @@
 const { Product } = require("../models/Product");
+const mongoose = require("mongoose");
 
 exports.createProduct = async function (req, res, next) {
   try {
@@ -58,51 +59,53 @@ exports.createProduct = async function (req, res, next) {
     next(err);
   }
 };
-exports.allProducts = async function (req, res, next) {
-  try {
-    const page = req.query.page || 1;
-    const limit = 10;
-    const skip = (page - 1) * limit;
-    const product = await Product.aggregate([
-      {
-        $lookup: {
-          from: "subcategories",
-          localField: "subcategory_id",
-          foreignField: "_id",
-          as: "subcategory",
-        },
-      },
-      {
-        $skip: skip,
-      },
-      {
-        $limit: limit,
-      },
-      {
-        $project: {
-          _id: 1,
-          sku: 1,
-          product_image: 1,
-          product_name: 1,
-          categoryName: "$subcategory.subcategory_name",
-          short_description: 1,
-          price: 1,
-          discount_price: 1,
-          active: 1,
-          options: 1
-       
-        },
-      },
-    ]);
+// exports.allProducts = async function (req, res, next) {
+//   try {
+//     const page = req.query.page || 1;
+//     const limit = 10;
+//     const skip = (page - 1) * limit;
+//     const product = await Product.aggregate([
+//       {
+//         $lookup: {
+//           from: "subcategories",
+//           localField: "subcategory_id",
+//           foreignField: "_id",
+//           as: "subcategory",
+//         },
+//       },
+//       {
+//         $skip: skip,
+//       },
+//       {
+//         $limit: limit,
+//       },
+//       {
+//         $project: {
+//           _id: 1,
+//           sku: 1,
+//           product_image: 1,
+//           product_name: 1,
+//           categoryName: "$subcategory.subcategory_name",
+//           subcategoryid: "$subcategory._id",
+//           short_description: 1,
+//           price: 1,
+//           discount_price: 1,
+//           active: 1,
+//           options: 1
 
-    res.status(200).json(product);
-  } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
-  }
-};
+//         },
+//       },
+//     ]);
+
+//     res.status(200).json(product);
+//   } catch (err) {
+//     if (!err.statusCode) {
+//       err.statusCode = 500;
+//     }
+//     next(err);
+//   }
+// };
+
 exports.searchProduct = async function (req, res, next) {
   try {
     const page = req.query.page || 1;
@@ -226,5 +229,63 @@ exports.deleteProduct = async function (req, res, next) {
       err.statusCode = 500;
     }
     next(err);
+  }
+};
+exports.allProducts = async function (req, res, next) {
+  console.log("GET / handler in productRoutes reached");
+  try {
+    const page = req.query.page * 1 || 1;
+    const limit = req.query.limit * 1 || 10;
+    const skip = (page - 1) * limit;
+
+    // Nested route
+    // GET /v1/subcategories/products
+    let filterObject = {};
+    if (req.params.subcategoryId)
+      filterObject = {
+        subcategory_id: new mongoose.Types.ObjectId(req.params.subcategoryId),
+      };
+
+    const product = await Product.aggregate([
+      {
+        $match: filterObject,
+      },
+      {
+        $lookup: {
+          from: "subcategories",
+          localField: "subcategory_id",
+          foreignField: "_id",
+          as: "subcategory",
+        },
+      },
+      {
+        $skip: skip,
+      },
+      {
+        $limit: limit,
+      },
+      {
+        $project: {
+          _id: 1,
+          sku: 1,
+          product_image: 1,
+          product_name: 1,
+          categoryName: "$subcategory.subcategory_name",
+          subcategoryid: "$subcategory.subcategory._id",
+          short_description: 1,
+          price: 1,
+          discount_price: 1,
+          active: 1,
+          options: 1,
+        },
+      },
+    ]);
+
+    res.status(200).json(product);
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
   }
 };

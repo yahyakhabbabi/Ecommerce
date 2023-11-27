@@ -15,6 +15,9 @@ const UserSchema = new mongoose.Schema(
       required: [true, "Please provide a unique username"],
       unique: true,
     },
+    userImage: {
+      type: String,
+    },
     password: { type: String, required: [true, "Please provide a password"] },
     last_login: { type: Date, default: Date.now },
     active: { type: Boolean, default: true },
