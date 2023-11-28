@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useContext } from "react";
+import React, { useContext, useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import DataTable from "../../../components/DataTable";
 import AuthContext from "../../../context/AuthContext";
@@ -7,49 +7,84 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Fade from "@mui/material/Fade";
 
-export default function CustomerTable() {
-  const tableName = "customers";
+
+export default function UsersTable() {
   const authContext = useContext(AuthContext);
   const { authTokens } = authContext;
-  const [customers, setCustomers] = useState([]);
+const tableName = "Subcategorie"
+  const [subCategorie, setSubCategorie] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const [openSuccess, setOpenSuccess] = useState(false);
-  const [openError, setOpenError] = useState(false);
-
+  const [openError, setOpenError] = useState(false); 
+  
   const fetchData = useCallback(async () => {
     try {
-      const response = await axios.get("http://localhost:3000/v1/customers", {
+      const response = await axios.get("http://localhost:3000/v1/Subcategories", {
         headers: {
           Authorization: `Bearer ${authTokens?.access_token}`,
         },
       });
       if (response.status === 200) {
-        setCustomers(response.data);
+        setSubCategorie(response.data);
         setIsLoading(false);
       } else {
-        throw new Error("Failed to fetch user data.");
+        setError("Failed to fetch user data.");
+        setIsLoading(false);
       }
     } catch (error) {
       setError("Error: " + error.message);
       setIsLoading(false);
-      setOpenError(true);
+      setOpenError(true); 
     }
   }, [authTokens]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData, authTokens]);
+  const handleSave = (data) => {
+    axios
+      .post("http://localhost:3000/v1/Subcategories", data, {
+        headers: {
+          Authorization: `Bearer ${authTokens?.access_token}`,
+        },
+      })
+      .then((response) => {
+        console.log("User data saved successfully:", response.data);
+        setSuccessMessage("User data saved successfully");
+        setOpenSuccess(true); // Open success modal
+
+        // Clear success message after 3 seconds
+        setTimeout(() => {
+          setSuccessMessage(null);
+          setOpenSuccess(false);
+        }, 3000);
+
+        fetchData();
+      })
+      .catch((error) => {
+        setError("Error: " + error.message);
+        console.error("Error saving user data:", error);
+        setOpenError(true); // Open error modal
+
+        // Clear error message after 3 seconds
+        setTimeout(() => {
+          clearError();
+          setOpenError(false); // Close error modal
+        }, 3000);
+      });
+  };
 
   const clearError = () => {
     setError(null);
   };
 
-  const handleDeleteCustomer = async (id) => {
+
+  const deleteUser = async (id) => {
     try {
       const response = await axios.delete(
-        `http://localhost:3000/v1/customers/${id}`,
+        `http://localhost:3000/v1/Subcategories/${id}`,
         {
           headers: {
             Authorization: `Bearer ${authTokens?.access_token}`,
@@ -57,27 +92,38 @@ export default function CustomerTable() {
         }
       );
       if (response.status === 200) {
-        setCustomers(customers.filter((customer) => customer._id !== id));
+        setSubCategorie(subCategorie.filter((subCategorie) => subCategorie._id !== id));
         setSuccessMessage("User deleted successfully");
-        setOpenSuccess(true);
+        setOpenSuccess(true); // Open success modal
 
+        // Clear success message after 3 seconds
         setTimeout(() => {
           setSuccessMessage(null);
-          setOpenSuccess(false);
+          setOpenSuccess(false); // Close success modal
         }, 3000);
       } else {
-        throw new Error("Failed to delete user");
+        setError("Failed to delete user");
+        setOpenError(true); // Open error modal
+
+        // Clear error message after 3 seconds
+        setTimeout(() => {
+          clearError();
+          setOpenError(false); // Close error modal
+        }, 3000);
       }
     } catch (error) {
       setError("Error: " + error.message);
-      setOpenError(true);
+      setOpenError(true); // Open error modal
 
+      // Clear error message after 3 seconds
       setTimeout(() => {
         clearError();
-        setOpenError(false);
+        setOpenError(false); // Close error modal
       }, 3000);
     }
   };
+
+ 
 
   return (
     <Box display="flex" flexDirection="column" alignItems="center">
@@ -136,29 +182,30 @@ export default function CustomerTable() {
         </Fade>
       </Modal>
       {isLoading && <p>Loading...</p>}
-      {error && <p>Error: {error}</p>}
-      {!isLoading && !error && customers.length > 0 && (
+      {!isLoading && subCategorie.length > 0 && (
         <DataTable
-          data={customers}
-          columns={[
-            { field: "firstName", label: "First Name" },
-            { field: "lastName", label: "Last Name" },
-            { field: "email", label: "Email" },
-            { field: "valid_account", label: "Valid account", type: "Booleen" },
-          ]}
-          column={[
-            { field: "firstName", label: "First Name" },
-            { field: "lastName", label: "Last Name" },
-            { field: "email", label: "Email" },
-            { field: "valid_account", label: "Valid account", type: "Boolean" },
-          ]}
-          onDelete={handleDeleteCustomer}
-          title="Customers List"
-          dialogTitle="Create Customer"
-          tableType="customer"
+        data={subCategorie}
+        columns={[
+          { field: "_id", label: "id" },
+          { field: "subcategory_name", label: "subcategory_name" },
+          { field: "category_name", label: "category_name" },
+          { field: "active", label: "active",type:"Booleen"},
+        ]}
+        column={[
+          { field: "category_id", label: "category_id" },
+          { field: "subcategory_name", label: "subcategory_name" },
+        
+      
+        ]}
+        onDelete={deleteUser}
+        title="subCategorie List"
+        onSave={handleSave}
+        dialogTitle="Create subCategorie"
           tableName={tableName}
         />
       )}
     </Box>
   );
 }
+
+

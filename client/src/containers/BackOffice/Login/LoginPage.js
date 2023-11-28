@@ -1,94 +1,62 @@
-import React, { useState, useRef, useEffect} from 'react';
+import React, { useRef, useContext } from 'react';
 import './login.css';
-import useAuth from '../../../hooks/useAuth';
-import axios from '../../../services/api';
-import {Link,useNavigate,useLocation} from "react-router-dom"
-
-const LOGIN_URL = '/v1/users/login';
+import AuthContext from '../../../context/AuthContext';
 
 export default function LoginPage() {
-  const { setAuth } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const from = location.state?.from?.pathname || "/dashboard";
   const userRef = useRef();
+  const pwdRef = useRef();
   const errRef = useRef();
-  const [user, setUser] = useState('');
-  const [pwd, setPwd] = useState('');
-  const [ErrMsg, setErrMsg] = useState('');
+  const { loginUser, errMsg } = useContext(AuthContext);
 
-
-  useEffect(() => {
-    userRef.current.focus();
-  }, []);
-
-  useEffect(() => {
-    setErrMsg('');
-  }, [user, pwd]);
-
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post(LOGIN_URL, {
-        user_name: user,
-        password: pwd,
+      await loginUser({
+        username: userRef.current.value,
+        password: pwdRef.current.value,
       });
-
-      console.log(JSON.stringify(response?.data));
-      const accessToken = response?.data?.accessToken;
-      const roles = response?.data?.roles;
-      setAuth({ user, pwd, roles, accessToken });
-      setUser('');
-      setPwd('');
-     navigate(from,{replace:true});
-    } catch (err) {
-      if (!err?.response) {
-        setErrMsg('No server response');
-      } else if (err.response?.status === 400) {
-        setErrMsg('Missing username or password');
-      } else if (err.response?.status === 401) {
-        setErrMsg('Unauthorized');
-      } else {
-        setErrMsg('Login failed');
-      }
-      errRef.current.focus();
+    } catch (error) {
+      console.error('Error during login:', error);
     }
-  }
+  };
 
   return (
-    <div className='principalDiv'>
-    <section className='container'>
-    <p ref={errRef} className={ErrMsg ? "errmsg" : "offscreen"} aria-live='assertive'>{ErrMsg}</p>
-    <form onSubmit={handleSubmit}>
-      <div className="loginInfo">
-        <div className="userInput">
-          <label>Username</label>
-          <input type="text" required
-            className="userName"
-            ref={userRef}
-            onChange={(e) => setUser(e.target.value)}
-            value={user} />
-        </div>
-        <div className="passwordInput">
-          <label>Password</label>
-          <input type="password" required className="password"
-            onChange={(e) => setPwd(e.target.value)}
-            value={pwd} />
+    <section className='body1'>
+      <div className="container">
+        <p ref={errRef} className={errMsg ? 'errmsg' : 'offscreen'} aria-live="assertive">
+          {errMsg}
+        </p>
 
-        </div>
-        <div className="rememberBox">
-          <input type="checkbox" id="rememberMe" name="rememberMe" />
-          <label htmlFor="rememberMe">Remember Me</label>
-        </div>
+        <form onSubmit={handleLogin}>
+          <div className="loginInfo">
+            <div className="userInput">
+              <label>Username</label>
+              <input
+                type="text"
+                required
+                className="userName"
+                ref={userRef}
+              />
+            </div>
+            <div className="passwordInput">
+              <label>Password</label>
+              <input
+                type="password"
+                required
+                className="password"
+                ref={pwdRef}
+              />
+            </div>
+            <div className="rememberBox">
+              {/* Add any additional form elements as needed */}
+            </div>
+          </div>
+          <div className="logFor">
+            <button type="submit">LOG IN</button>
+          </div>
+        </form>
       </div>
-      <div className="logFor">
-        <a href="forgot_password.html" className="forPass">Forgot Your Password?</a>
-        <button>LOG IN</button>
-      </div>
-    </form>
     </section>
-    </div> 
-      )}
-
-
+  );
+}
