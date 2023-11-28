@@ -39,13 +39,17 @@ exports.login = async function (req, res, next) {
     customer.last_login = new Date();
 
     const accessToken = jwt.sign(
+<<<<<<< HEAD
       { id: customer._id, email: customer.email, firstName: customer.firstName, lastName: customer.lastName, type: "customer" },
+=======
+      { id: customer._id, email: customer.email,firstName:customer.firstName,lastName:customer.lastName, type: "customer" },
+>>>>>>> 31727590568500a5c69c9729e5800885b24d2574
       JWT_SECRET_customer,
       { expiresIn: "1d" }
     );
 
     const refreshToken = jwt.sign(
-      { id: customer._id, email: customer.email, type: "customer" },
+      { id: customer._id, email: customer.email,firstName:customer.firstName,lastName:customer.lastName, type: "customer" },
       Refresh_JWT_SECRET_customer,
       { expiresIn: "7d" }
     );
@@ -136,6 +140,7 @@ exports.validateCustomer = async function (req, res, next) {
     }
 
     await customer.updateOne({ valid_account: true });
+    return res.redirect('http://localhost:3001/landing');
     res.status(201).json("your email is validate avec success");
   } catch (err) {
     if (!err.statusCode) {
@@ -143,7 +148,6 @@ exports.validateCustomer = async function (req, res, next) {
     }
     next(err);
   }
-  // return res.redirect('http://localhost:3000/v1/customers/login');
 };
 exports.getAllCustomer = async function (req, res, next) {
   try {
@@ -252,7 +256,7 @@ exports.updateCustomer = async function (req, res, next) {
     next(err);
   }
 };
-exports.deleteCustomer = async function (req, res) {
+exports.deleteCustomer = async function (req, res,next) {
   try {
     const { id } = req.customer;
     const customer = await Customers.findOne({ _id: id });
@@ -273,7 +277,7 @@ exports.deleteCustomer = async function (req, res) {
     next(err);
   }
 };
-exports.customerProfile = async function (req, res) {
+exports.customerProfile = async function (req, res ,next) {
   try {
     const { id } = req.customer;
     const customer = await Customers.findOne({ _id: id });
@@ -291,7 +295,11 @@ exports.customerProfile = async function (req, res) {
     next(err);
   }
 };
+<<<<<<< HEAD
 exports.updateDataCustomer = async function (req, res, next) {
+=======
+exports.updateDataCustomer = async function (req, res,next) {
+>>>>>>> 31727590568500a5c69c9729e5800885b24d2574
   try {
     const id = req.body.id;
     if (id) {
@@ -329,6 +337,7 @@ exports.updateDataCustomer = async function (req, res, next) {
     next(err);
   }
 };
+<<<<<<< HEAD
 exports.updatePassword= async function (req,res,next){
   const customer = await Customers.findById(req.customer.id).select('+password');
   
@@ -341,3 +350,35 @@ exports.updatePassword= async function (req,res,next){
     return next.json(400)
   }
 }
+=======
+exports.refresh = async function (req, res) {
+  const refreshToken = req.body.refresh_token;
+  console.log(refreshToken);
+
+  if (!refreshToken) {
+    return res.status(401).json("You are not authenticated");
+  }
+
+  jwt.verify(refreshToken, Refresh_JWT_SECRET_customer, (err, decoded) => {
+    if (err) {
+      return res.status(403).json("Refresh token is not valid!");
+    }
+
+    const accessToken = jwt.sign(
+      { id: customer._id, email: customer.email,firstName:customer.firstName,lastName:customer.lastName,type: "customer" },
+      JWT_SECRET_customer,
+      { expiresIn: "1d" }
+    );
+
+
+
+    res.status(200).json({
+      token: {
+        access_token: accessToken,
+        token_type: "Bearer",
+        expires_in: "10s",
+      },
+    });
+  });
+};
+>>>>>>> 31727590568500a5c69c9729e5800885b24d2574
