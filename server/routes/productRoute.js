@@ -1,5 +1,5 @@
-const express = require('express');
-const router = express.Router();
+const {Router} = require('express');
+const router = Router({mergeParams:true});
 
 const productController = require('../controllers/productController');
 const {verifyJWT,isAdmin,isAdminOrManager} = require('../middelware/authMiddleware');
@@ -12,7 +12,7 @@ const {
     deleteProductValidator
 } = require('../utils/validator/productValidator');
 
-router.post('/',postCreateProductValidator,verifyJWT(JWT_SECRET),isAdminOrManager ,upload.single('product_image'),productController.createProduct);
+router.post('/'/* ,postCreateProductValidator,verifyJWT(JWT_SECRET),isAdminOrManager  */,upload.single('product_image'),productController.createProduct);
 router.get('/',(req,res,next)=>{
     if(Object.keys(req.query).length>1){
         productController.searchProduct(req, res, next);
@@ -20,8 +20,9 @@ router.get('/',(req,res,next)=>{
         productController.allProducts(req, res, next);
     }
 });
-router.get('/:id',getProductValidator,productController.productById);
-router.patch('/:id',patchProductValidator,verifyJWT(JWT_SECRET),isAdminOrManager,productController.updateProduct);
-router.delete('/:id',deleteProductValidator,verifyJWT(JWT_SECRET),isAdminOrManager,productController.deleteProduct);
+
+router.get('/:id'/* ,getProductValidator, */,productController.productById);
+router.patch('/:id' ,/* patchProductValidator verifyJWT(JWT_SECRET) ,isAdminOrManager */productController.updateProduct);
+router.delete('/:id',/* deleteProductValidator,verifyJWT(JWT_SECRET),isAdminOrManager, */productController.deleteProduct);
 
 module.exports=router;
