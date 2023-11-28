@@ -334,7 +334,7 @@ exports.refresh = async function (req, res) {
     return res.status(401).json("You are not authenticated");
   }
 
-  jwt.verify(refreshToken, Refresh_JWT_SECRET, (err, decoded) => {
+  jwt.verify(refreshToken, Refresh_JWT_SECRET_customer, (err, decoded) => {
     if (err) {
       return res.status(403).json("Refresh token is not valid!");
     }
