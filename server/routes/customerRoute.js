@@ -33,10 +33,9 @@ router.get('/profile',verifyJWT(JWT_SECRET_customer),customerController.customer
 
 
 
-router.patch('/changePassword', customerController.updatePassword);
+router.put('/profile/updatepassword', verifyJWT(JWT_SECRET_customer), customerController.updatePassword);
 
 router.patch('/profile/update',verifyJWT(JWT_SECRET_customer),customerController.updateDataCustomer);
 router.post("/refresh",customerController.refresh)
-
 
 module.exports=router;

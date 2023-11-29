@@ -39,11 +39,7 @@ exports.login = async function (req, res, next) {
     customer.last_login = new Date();
 
     const accessToken = jwt.sign(
-<<<<<<< HEAD
-      { id: customer._id, email: customer.email, firstName: customer.firstName, lastName: customer.lastName, type: "customer" },
-=======
       { id: customer._id, email: customer.email,firstName:customer.firstName,lastName:customer.lastName, type: "customer" },
->>>>>>> 31727590568500a5c69c9729e5800885b24d2574
       JWT_SECRET_customer,
       { expiresIn: "1d" }
     );
@@ -60,8 +56,6 @@ exports.login = async function (req, res, next) {
       expires_in: 30,
       refresh_token: refreshToken,
       customer,
-      firstName: customer.firstName,
-      lastName: customer.lastName,
     });
   } catch (err) {
     if (!err.statusCode) {
@@ -140,7 +134,7 @@ exports.validateCustomer = async function (req, res, next) {
     }
 
     await customer.updateOne({ valid_account: true });
-    return res.redirect('http://localhost:3001/landing');
+    return res.redirect('http://localhost:3001');
     res.status(201).json("your email is validate avec success");
   } catch (err) {
     if (!err.statusCode) {
@@ -295,16 +289,11 @@ exports.customerProfile = async function (req, res ,next) {
     next(err);
   }
 };
-<<<<<<< HEAD
-exports.updateDataCustomer = async function (req, res, next) {
-=======
 exports.updateDataCustomer = async function (req, res,next) {
->>>>>>> 31727590568500a5c69c9729e5800885b24d2574
   try {
-    const id = req.body.id;
+    const { id } = req.customer;
     if (id) {
       const body = req.body;
-      console.log(body)
       const customer = await Customers.findOne({ _id: id });
 
       if (!customer) {
@@ -313,18 +302,18 @@ exports.updateDataCustomer = async function (req, res,next) {
         throw error;
       }
 
-      // const existingEmail = await Customers.findOne({
-      //   _id: id,
-      //   email: body.email,
-      // });
-      // if (existingEmail) {
-      //   const error = new Error("Email already exists");
-      //   error.statusCode = 400;
-      //   throw error;
-      // }
+      const existingEmail = await Customers.findOne({
+        _id: id,
+        email: body.email,
+      });
+      if (existingEmail) {
+        const error = new Error("Email already exists");
+        error.statusCode = 400;
+        throw error;
+      }
       await Customers.updateOne({ _id: id }, { $set: { ...body, _id: id } });
 
-      res.status(200).json("User updated successfully");
+      res.status(200).json("Customer updated successfully");
     } else {
       const error = new Error("customer not found");
       error.statusCode = 400;
@@ -337,20 +326,6 @@ exports.updateDataCustomer = async function (req, res,next) {
     next(err);
   }
 };
-<<<<<<< HEAD
-exports.updatePassword= async function (req,res,next){
-  const customer = await Customers.findById(req.customer.id).select('+password');
-  
-  customerSchema.methods.comparePassword= async function (enteredPassword){
-    return await bcrypt.compare(enteredPassword,this.password);
-  }
-
-  const isMatched = await customer.comparePassword(req.body.currentPassword)
-  if (!isMatched){
-    return next.json(400)
-  }
-}
-=======
 exports.refresh = async function (req, res) {
   const refreshToken = req.body.refresh_token;
   console.log(refreshToken);
@@ -381,4 +356,46 @@ exports.refresh = async function (req, res) {
     });
   });
 };
->>>>>>> 31727590568500a5c69c9729e5800885b24d2574
+
+exports.updatePassword = async function (req, res, next) {
+  try {
+    const { id } = req.customer;
+    const { currentPassword, newPassword, confirmNewPassword } = req.body;
+
+    const customer = await Customers.findById(id);
+
+    if (!customer) {
+      const error = new Error("Customer not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, customer.password);
+
+    if (!isMatch) {
+      const error = new Error("Password incorrect");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      const error = new Error("New passwords do not match");
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    customer.password = hashedPassword;
+    await customer.save();
+
+    res.status(200).json({ message: "Password updated successfully" });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
