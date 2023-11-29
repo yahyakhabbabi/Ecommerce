@@ -1,5 +1,5 @@
-const express = require('express');
-const router = express.Router();
+const {Router} = require('express');
+const router = Router({mergeParams:true});
 
 const orderController = require('../controllers/orderController');
 const {verifyJWT,isAdmin,isAdminOrManager} = require('../middelware/authMiddleware');
