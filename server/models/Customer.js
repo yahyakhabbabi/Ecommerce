@@ -8,7 +8,7 @@ const customersSchema = new mongoose.Schema(
 
     email: {
       type: String,
-      unique: true,
+       unique: [true,"email should be unique"],
       required: [true, "Please provide a unique email"],
     },
 

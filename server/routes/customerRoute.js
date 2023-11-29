@@ -12,8 +12,7 @@ const {
     getCustomerValidator,
     deletecustomerValidator
 }=require('../utils/validator/customerValidator')
-
-
+const orderRoute = require("./orderRoute")
 router.post('/login',/* postloginCustomerValidator */customerController.login);
 
 router.post('/',postCreateCustomerValidator,/* verifyJWT(JWT_SECRET_customer), */customerController.createCustomer);
@@ -36,6 +35,7 @@ router.get('/profile',verifyJWT(JWT_SECRET_customer),customerController.customer
 router.put('/profile/updatepassword', verifyJWT(JWT_SECRET_customer), customerController.updatePassword);
 
 router.patch('/profile/update',verifyJWT(JWT_SECRET_customer),customerController.updateDataCustomer);
-router.post("/refresh",customerController.refresh)
+router.post("/refresh",customerController.refresh);
+router.use('/:customerId/orders',orderRoute)
 
 module.exports=router;

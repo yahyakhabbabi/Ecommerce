@@ -3,7 +3,10 @@ const { Orders } = require("../models/Order");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const emailSender = require("../config/emailSender");
-const { JWT_SECRET_customer, Refresh_JWT_SECRET_customer } = require("../config/env");
+const {
+  JWT_SECRET_customer,
+  Refresh_JWT_SECRET_customer,
+} = require("../config/env");
 
 exports.login = async function (req, res, next) {
   const { email, password } = req.body;
@@ -39,13 +42,25 @@ exports.login = async function (req, res, next) {
     customer.last_login = new Date();
 
     const accessToken = jwt.sign(
-      { id: customer._id, email: customer.email,firstName:customer.firstName,lastName:customer.lastName, type: "customer" },
+      {
+        id: customer._id,
+        email: customer.email,
+        firstName: customer.firstName,
+        lastName: customer.lastName,
+        type: "customer",
+      },
       JWT_SECRET_customer,
       { expiresIn: "1d" }
     );
 
     const refreshToken = jwt.sign(
-      { id: customer._id, email: customer.email,firstName:customer.firstName,lastName:customer.lastName, type: "customer" },
+      {
+        id: customer._id,
+        email: customer.email,
+        firstName: customer.firstName,
+        lastName: customer.lastName,
+        type: "customer",
+      },
       Refresh_JWT_SECRET_customer,
       { expiresIn: "7d" }
     );
@@ -57,6 +72,31 @@ exports.login = async function (req, res, next) {
       refresh_token: refreshToken,
       customer,
     });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+exports.validateCustomer = async function (req, res, next) {
+  try {
+    const { id } = req.params;
+    const customer = await Customers.findById(id);
+
+    if (!customer) {
+      const error = new Error("customer not found");
+      error.statusCode = 404;
+      throw error;
+    }
+    if (customer.valid_account) {
+      const error = new Error("email already validate");
+      error.statusCode = 400;
+      throw error;
+    }
+
+    await customer.updateOne({ valid_account: true });
+    return res.redirect("http://localhost:3001/login");
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -117,32 +157,7 @@ exports.createCustomer = async function (req, res, next) {
     next(err);
   }
 };
-exports.validateCustomer = async function (req, res, next) {
-  try {
-    const { id } = req.params;
-    const customer = await Customers.findById(id);
 
-    if (!customer) {
-      const error = new Error("customer not found");
-      error.statusCode = 404;
-      throw error;
-    }
-    if (customer.valid_account) {
-      const error = new Error("email already validate");
-      error.statusCode = 400;
-      throw error;
-    }
-
-    await customer.updateOne({ valid_account: true });
-    return res.redirect('http://localhost:3001');
-    res.status(201).json("your email is validate avec success");
-  } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
-  }
-};
 exports.getAllCustomer = async function (req, res, next) {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -250,7 +265,7 @@ exports.updateCustomer = async function (req, res, next) {
     next(err);
   }
 };
-exports.deleteCustomer = async function (req, res,next) {
+exports.deleteCustomer = async function (req, res, next) {
   try {
     const { id } = req.customer;
     const customer = await Customers.findOne({ _id: id });
@@ -271,7 +286,7 @@ exports.deleteCustomer = async function (req, res,next) {
     next(err);
   }
 };
-exports.customerProfile = async function (req, res ,next) {
+exports.customerProfile = async function (req, res, next) {
   try {
     const { id } = req.customer;
     const customer = await Customers.findOne({ _id: id });
@@ -289,7 +304,7 @@ exports.customerProfile = async function (req, res ,next) {
     next(err);
   }
 };
-exports.updateDataCustomer = async function (req, res,next) {
+exports.updateDataCustomer = async function (req, res, next) {
   try {
     const { id } = req.customer;
     if (id) {
@@ -303,17 +318,19 @@ exports.updateDataCustomer = async function (req, res,next) {
       }
 
       const existingEmail = await Customers.findOne({
-        _id: id,
+        _id: { $ne: id }, 
         email: body.email,
       });
+      
       if (existingEmail) {
         const error = new Error("Email already exists");
         error.statusCode = 400;
         throw error;
       }
+      
       await Customers.updateOne({ _id: id }, { $set: { ...body, _id: id } });
 
-      res.status(200).json("Customer updated successfully");
+      res.status(200).json("User updated successfully");
     } else {
       const error = new Error("customer not found");
       error.statusCode = 400;
@@ -340,12 +357,16 @@ exports.refresh = async function (req, res) {
     }
 
     const accessToken = jwt.sign(
-      { id: customer._id, email: customer.email,firstName:customer.firstName,lastName:customer.lastName,type: "customer" },
+      {
+        id: customer._id,
+        email: customer.email,
+        firstName: customer.firstName,
+        lastName: customer.lastName,
+        type: "customer",
+      },
       JWT_SECRET_customer,
       { expiresIn: "1d" }
     );
-
-
 
     res.status(200).json({
       token: {
