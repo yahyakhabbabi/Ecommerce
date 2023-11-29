@@ -1,5 +1,6 @@
 const { Orders } = require("../models/Order");
 const { Customers } = require("../models/Customer");
+const mongoose = require('mongoose')
 
 exports.createOrder = async function (req, res, next) {
   try {
@@ -41,8 +42,16 @@ exports.allOrders = async function (req, res, next) {
     const page = parseInt(req.query.page) || 1;
     const limit = 10;
     const skip = (page - 1) * limit;
+    let filterObject = {};
+    if (req.params.customerId)
+      filterObject = {
+        customer_id: new mongoose.Types.ObjectId(req.params.customerId),
+      };
 
     const pipeline = [
+      {
+        $match: filterObject,
+      },
       {
         $lookup: {
           from: "customers",
@@ -145,3 +154,4 @@ exports.updateOrder = async function (req, res, next) {
     next(err);
   }
 };
+
