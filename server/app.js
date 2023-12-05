@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: false }));
 const corsOptions = {
-    origin: 'http://localhost:3001', // Replace with the allowed origin
+    origin: '*', // Replace with the allowed origin
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     preflightContinue: false,
   

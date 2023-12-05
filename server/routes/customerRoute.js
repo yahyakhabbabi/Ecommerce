@@ -12,6 +12,7 @@ const {
     getCustomerValidator,
     deletecustomerValidator
 }=require('../utils/validator/customerValidator')
+const {upload} = require('../middelware/uploadMiddleware');
 const orderRoute = require("./orderRoute")
 router.post('/login',/* postloginCustomerValidator */customerController.login);
 
@@ -28,13 +29,14 @@ router.get('/:id([0-9a-fA-F]{24})'/* ,getCustomerValidator,verifyJWT(JWT_SECRET)
 router.put('/:id'/* ,putUpdateCustomer,verifyJWT(JWT_SECRET),isAdminOrManager */,customerController.updateCustomer);
 router.delete('/delete',verifyJWT(JWT_SECRET_customer),customerController.deleteCustomer);
 router.get('/profile',verifyJWT(JWT_SECRET_customer),customerController.customerProfile);
+router.patch('/profile/update',verifyJWT(JWT_SECRET_customer),upload.single('customer_image'),customerController.updateDataCustomer);
 
 
 
 
 router.put('/profile/updatepassword', verifyJWT(JWT_SECRET_customer), customerController.updatePassword);
 
-router.patch('/profile/update',verifyJWT(JWT_SECRET_customer),customerController.updateDataCustomer);
+
 router.post("/refresh",customerController.refresh);
 router.use('/:customerId/orders',orderRoute)
 
