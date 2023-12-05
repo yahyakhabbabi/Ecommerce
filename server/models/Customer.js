@@ -11,7 +11,7 @@ const customersSchema = new mongoose.Schema(
        unique: [true,"email should be unique"],
       required: [true, "Please provide a unique email"],
     },
-
+    address:{type: String},
     password: { type: String, required: [true, "Please provide a password"] },
 
     last_login: { type: Date, default: Date.now() },

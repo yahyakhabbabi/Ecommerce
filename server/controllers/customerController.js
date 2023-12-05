@@ -358,10 +358,10 @@ exports.refresh = async function (req, res) {
 
     const accessToken = jwt.sign(
       {
-        id: customer._id,
-        email: customer.email,
-        firstName: customer.firstName,
-        lastName: customer.lastName,
+        id: decoded._id,
+        email: decoded.email,
+        firstName: decoded.firstName,
+        lastName: decoded.lastName,
         type: "customer",
       },
       JWT_SECRET_customer,
