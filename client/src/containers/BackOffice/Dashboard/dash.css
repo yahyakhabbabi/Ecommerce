@@ -13,11 +13,23 @@
   }
   
 
-.bgcolor{
+  .bgcolor {
     min-height: 100vh;
     background-color: var(--body_background1);
     color: var(--body_color);
-   
+}
+
+#reader {
+  width: 510px;
+}
+video {
+  width: 508px;
+}
+
+.MuiTypography-root.MuiTypography-body2.css-r40f8v-MuiTypography-root{
+  display: flex;
+  justify-content: center;
+
 }
 /* CSS */
 .flexCard {

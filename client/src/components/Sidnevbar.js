@@ -18,9 +18,10 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import LocalMallIcon from '@mui/icons-material/LocalMall';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+// import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import CategoryIcon from '@mui/icons-material/Category';
 import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
+import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 
 import "../styles/main.css"
 const drawerWidth = 240;
@@ -168,8 +169,8 @@ export default function MiniDrawer() {
         navigate={navigate}
       />
       <CustomListItem
-        icon={<AttachMoneyIcon />}
-        primaryText="payments"
+        icon={<QrCodeScannerIcon />}
+        primaryText="QRCODE"
         path="/payements"
         open={open}
         navigate={navigate}
