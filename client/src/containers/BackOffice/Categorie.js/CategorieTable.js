@@ -182,7 +182,7 @@ const tableName = "categorie"
         </Fade>
       </Modal>
       {isLoading && <p>Loading...</p>}
-      {!isLoading && categorie.length > 0 && (
+      {!isLoading &&(
         <DataTable
           data={categorie}
           columns={[

@@ -182,7 +182,7 @@ const tableName = "Subcategorie"
         </Fade>
       </Modal>
       {isLoading && <p>Loading...</p>}
-      {!isLoading && subCategorie.length > 0 && (
+      {!isLoading &&(
         <DataTable
         data={subCategorie}
         columns={[

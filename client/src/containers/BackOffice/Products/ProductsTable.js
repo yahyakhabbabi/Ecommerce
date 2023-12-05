@@ -189,7 +189,7 @@ export default function ProductsTable() {
         </Fade>
         </Modal>
       {isLoading && <p>Loading...</p>}
-      {!isLoading && !error && products.length > 0 && (
+      {!isLoading && (
          
         <DataTable
        
