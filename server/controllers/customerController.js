@@ -47,10 +47,11 @@ exports.login = async function (req, res, next) {
         email: customer.email,
         firstName: customer.firstName,
         lastName: customer.lastName,
+        customer_image: customer.customer_image,
         type: "customer",
       },
       JWT_SECRET_customer,
-      { expiresIn: "1d" }
+      { expiresIn: "30s" }
     );
 
     const refreshToken = jwt.sign(
@@ -59,6 +60,7 @@ exports.login = async function (req, res, next) {
         email: customer.email,
         firstName: customer.firstName,
         lastName: customer.lastName,
+        customer_image: customer.customer_image,
         type: "customer",
       },
       Refresh_JWT_SECRET_customer,
@@ -307,35 +309,44 @@ exports.customerProfile = async function (req, res, next) {
 exports.updateDataCustomer = async function (req, res, next) {
   try {
     const { id } = req.customer;
-    if (id) {
-      const body = req.body;
-      const customer = await Customers.findOne({ _id: id });
 
-      if (!customer) {
-        const error = new Error("customer not found");
-        error.statusCode = 404;
-        throw error;
-      }
-
-      const existingEmail = await Customers.findOne({
-        _id: { $ne: id }, 
-        email: body.email,
-      });
-      
-      if (existingEmail) {
-        const error = new Error("Email already exists");
-        error.statusCode = 400;
-        throw error;
-      }
-      
-      await Customers.updateOne({ _id: id }, { $set: { ...body, _id: id } });
-
-      res.status(200).json("User updated successfully");
-    } else {
-      const error = new Error("customer not found");
+    if (!id) {
+      const error = new Error("Customer not found");
       error.statusCode = 400;
       throw error;
     }
+
+    const body = req.body;
+    const customer_image = req.file ? req.file.path : null;
+
+    // Fetch the existing customer
+    const customer = await Customers.findOne({ _id: id });
+
+    if (!customer) {
+      const error = new Error("Customer not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    // Check if the provided email already exists for another customer
+    const existingEmail = await Customers.findOne({
+      _id: { $ne: id },
+      email: body.email,
+    });
+
+    if (existingEmail) {
+      const error = new Error("Email already exists");
+      error.statusCode = 400;
+      throw error;
+    }
+
+    // Update customer data, including the image path
+    const updateData = { ...body, customer_image, _id: id };
+
+    // Update the customer document
+    await Customers.updateOne({ _id: id }, { $set: updateData });
+
+    res.status(200).json("User updated successfully");
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -343,6 +354,7 @@ exports.updateDataCustomer = async function (req, res, next) {
     next(err);
   }
 };
+
 exports.refresh = async function (req, res) {
   const refreshToken = req.body.refresh_token;
   console.log(refreshToken);
@@ -358,10 +370,11 @@ exports.refresh = async function (req, res) {
 
     const accessToken = jwt.sign(
       {
-        id: decoded._id,
+        id: decoded.id,
         email: decoded.email,
         firstName: decoded.firstName,
         lastName: decoded.lastName,
+        customer_image: decoded.customer_image,
         type: "customer",
       },
       JWT_SECRET_customer,

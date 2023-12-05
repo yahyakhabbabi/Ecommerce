@@ -6,9 +6,15 @@ const customersSchema = new mongoose.Schema(
 
     lastName: { type: String },
 
+    address: { type: String },
+
+    customer_image: {
+      type: String,
+    },
+
     email: {
       type: String,
-       unique: [true,"email should be unique"],
+      unique: [true, "email should be unique"],
       required: [true, "Please provide a unique email"],
     },
     address:{type: String},

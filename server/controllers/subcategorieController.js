@@ -1,7 +1,7 @@
 const { Subcategory } = require("../models/Subcategorie");
 const { Product } = require("../models/Product");
 const { categorie } = require("../models/Categorie");
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
 exports.creatSubcategorie = async function (req, res, next) {
   const { subcategory_name, category_id } = req.body;
@@ -216,7 +216,7 @@ exports.deleteSubcategories = async function (req, res, next) {
     next(err);
   }
 };
-exports.listSubcategories = async function (req, res){
+exports.listSubcategories = async function (req, res) {
   console.log("GET / handler in subCategoryRoutes reached");
   try {
     const page = req.query.page * 1 || 1;
@@ -235,33 +235,31 @@ exports.listSubcategories = async function (req, res){
         $match: filterObject,
       },
       {
-                $lookup: {
-                  from: "categories",
-                  localField: "category_id",
-                  foreignField: "_id",
-                  as: "categories",
-                },
-              },
-              {
-                $addFields: {
-                  category_name: "$categories.category_name",
-                  lastName: "$customer_info.lastName",
-                },
-              },
-              {
-                $skip: skip,
-              },
-              {
-                $limit: limit,
-              },
-            ]);
-            res.status(200).send(subcategories);
-          } 
-
+        $lookup: {
+          from: "categories",
+          localField: "category_id",
+          foreignField: "_id",
+          as: "categories",
+        },
+      },
+      {
+        $addFields: {
+          category_name: "$categories.category_name",
+          lastName: "$customer_info.lastName",
+        },
+      },
+      {
+        $skip: skip,
+      },
+      {
+        $limit: limit,
+      },
+    ]);
+    res.status(200).send(subcategories);
+  } catch (error) {
     // return res
     //   .status(200)
     //   .send({ results: subcategories.length, page, subcategories });
-  catch (error) {
     return res.status(500).json({ error: error.message });
   }
-}
+};
