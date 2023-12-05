@@ -6,11 +6,17 @@ import Navbar from "../../../components/Navbar";
 import Copyright from "../../../components/Footer";
 
 import "../Dashboard/dash.css";
+import { useEffect, useState } from "react";
+import axios from 'axios';
 import UsersTable from "./UsersTable";
 // import useRefreshToken from "../../../hooks/useRefreshToken";
 
 
 export default function UsersListPage() {
+<<<<<<< HEAD
+  const [users, setUsers] = useState();
+  
+=======
   const columns = [
     { field: 'id', headerName: 'ID', width: 150 },
     { field: 'username', headerName: 'Username', width: 250 },
@@ -98,6 +104,7 @@ export default function UsersListPage() {
     setAddUserDialogOpen(false);
   };
 
+>>>>>>> 31727590568500a5c69c9729e5800885b24d2574
   return (
 
     <div className="bgcolor">

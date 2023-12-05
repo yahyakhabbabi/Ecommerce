@@ -390,3 +390,46 @@ exports.refresh = async function (req, res) {
     });
   });
 };
+
+exports.updatePassword = async function (req, res, next) {
+  try {
+    const { id } = req.customer;
+    const { currentPassword, newPassword, confirmNewPassword } = req.body;
+
+    const customer = await Customers.findById(id);
+
+    if (!customer) {
+      const error = new Error("Customer not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, customer.password);
+
+    if (!isMatch) {
+      const error = new Error("Password incorrect");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      const error = new Error("New passwords do not match");
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    customer.password = hashedPassword;
+    await customer.save();
+
+    res.status(200).json({ message: "Password updated successfully" });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
