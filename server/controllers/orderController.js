@@ -154,4 +154,55 @@ exports.updateOrder = async function (req, res, next) {
     next(err);
   }
 };
+exports.updateOrderItem = async function (req, res, next) {
+  try {
+    const { id, itemId } = req.params;
+    const { order } = req.body;
+
+    const orderToUpdate = await Orders.findById(id);
+    if (!orderToUpdate) {
+      const error = new Error("Order not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const orderItemToUpdate = orderToUpdate.order_items.find(item => item.id === itemId);
+    if (!orderItemToUpdate) {
+      const error = new Error("Order item not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    console.log('Current order_item:', orderItemToUpdate);
+    console.log('Order to update:', order);
+
+    // Check if the order item is already verified
+    if (orderItemToUpdate.order === 'verified') {
+      const error = new Error("Order item is already verified");
+      error.statusCode = 400;
+      throw error;
+    }
+
+    // If the order is 'open', update it to 'verified'
+    if (orderItemToUpdate.order === 'open') {
+      orderItemToUpdate.order = 'verified';
+    }
+
+    // Save the updated order
+    const savedOrder = await orderToUpdate.save();
+
+    console.log('Order item updated:', savedOrder.order_items.find(item => item.id === itemId));
+
+    return res.status(200).json("Order item updated successfully");
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+
+
+
 
