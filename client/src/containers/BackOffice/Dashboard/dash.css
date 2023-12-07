@@ -1,0 +1,52 @@
+:root {
+    --body_background1:white ;
+    --body_color: black;
+    --body_link: navy;
+    /* eceff1 */
+  }
+  
+  [data-theme="dark"] {
+    --body_background1: #282c34;
+   
+    --body_color: white;
+    --body_link: cyan;
+  }
+  
+
+  .bgcolor {
+    min-height: 100vh;
+    background-color: var(--body_background1);
+    color: var(--body_color);
+}
+
+#reader {
+  width: 510px;
+}
+video {
+  width: 508px;
+}
+
+.MuiTypography-root.MuiTypography-body2.css-r40f8v-MuiTypography-root{
+  display: flex;
+  justify-content: center;
+
+}
+/* CSS */
+.flexCard {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.flexCard1 {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.linegraphe{
+    height: 100%;
+    width: 100%;
+    background: #f00c0c;
+}

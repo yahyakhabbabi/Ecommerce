@@ -1,0 +1,21 @@
+
+/* styles.css */
+.success-message {
+    background-color: green;
+    color: white;
+    font-weight: bold;
+    padding: 6px;
+    margin: 9px 0;
+    width: 89vw
+  }
+  
+  .error-message {
+    background-color: red;
+    color: white;
+    font-weight: bold;
+    padding: 6px;
+    margin: 9px 0;
+    width: 89vw
+  }
+  
+
