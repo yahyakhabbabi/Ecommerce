@@ -25,7 +25,13 @@ const customersSchema = new mongoose.Schema(
     valid_account: { type: Boolean, default: false },
 
     active: { type: Boolean, default: true },
+
+    passwordResetToken:{type:String, default:null },
+    
+    passwordResetExpires:{type:Date, default:null}
   },
+
+
   { timestamps: true }
 );
 module.exports = { Customers: mongoose.model("Customers", customersSchema) };

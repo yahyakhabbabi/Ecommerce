@@ -15,6 +15,7 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: false }));
+
 const corsOptions = {
     origin: '*', // Replace with the allowed origin
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -22,7 +23,7 @@ const corsOptions = {
   
   };
   
-  app.use(cors(corsOptions));
+app.use(cors(corsOptions));
   
 
 //app.use for the API i create
