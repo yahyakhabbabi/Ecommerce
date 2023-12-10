@@ -14,7 +14,7 @@ const {
 
 router.post('/'/* ,postCreateProductValidator,verifyJWT(JWT_SECRET),isAdminOrManager  */,upload.single('product_image'),productController.createProduct);
 router.get('/',(req,res,next)=>{
-    if(Object.keys(req.query).length>1){
+    if(Object.keys(req.query).length>0){
         productController.searchProduct(req, res, next);
     }else{
         productController.allProducts(req, res, next);

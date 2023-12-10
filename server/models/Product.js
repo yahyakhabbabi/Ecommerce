@@ -10,6 +10,9 @@ const productSchema = new mongoose.Schema({
     type: String,
     unique: true,
   },
+  event_date: {
+  type: Date,
+  },
   subcategory_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Subcategory",

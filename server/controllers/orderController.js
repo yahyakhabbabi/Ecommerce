@@ -202,7 +202,23 @@ exports.updateOrderItem = async function (req, res, next) {
   }
 };
 
+exports.NbreOrder = async function (req, res, next) {
+  try {
+    const orderCount = await Orders.countDocuments();
 
+    const orders = await Orders.find({}, 'cart_total_price'); // Retrieve only cart_total_price field
+
+    // Calculate total revenue
+    const totalRevenue = orders.reduce((total, order) => total + order.cart_total_price, 0);
+
+    res.json({
+      orderCount,
+      totalRevenue
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
 
 
 

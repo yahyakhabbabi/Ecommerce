@@ -15,5 +15,5 @@ router.get('/'/* ,verifyJWT(JWT_SECRET),isAdminOrManager */,orderController.allO
 router.get('/:id',/* getOrderValidator,verifyJWT(JWT_SECRET),isAdminOrManager, */orderController.orderById);
 router.put('/:id',/* putOrderValidator,verifyJWT(JWT_SECRET),isAdminOrManager, */orderController.updateOrder)
 router.put('/:id/:itemId',/* putOrderValidator,verifyJWT(JWT_SECRET),isAdminOrManager, */orderController.updateOrderItem)
-
+router.get('/orders/nbre',/* getOrderValidator,verifyJWT(JWT_SECRET),isAdminOrManager, */orderController.NbreOrder);
 module.exports=router;
