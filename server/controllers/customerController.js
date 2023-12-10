@@ -7,8 +7,10 @@ const {
   JWT_SECRET_customer,
   Refresh_JWT_SECRET_customer,
 } = require("../config/env");
+const crypto = require("crypto");
 
 exports.login = async function (req, res, next) {
+  console.log("m in login");
   const { email, password } = req.body;
 
   try {
@@ -137,9 +139,18 @@ exports.createCustomer = async function (req, res, next) {
     try {
       const url = `http://localhost:3000/v1/customers/validate/${result.id}`;
 
-      const emailText = `Please click this email to confirm your email: ${url}`;
+      const emailText = `Hi ${customer.firstName},
+      
+      Welcome to Xticket! We're thrilled to have you on board. Before you dive into all the exciting features and benefits, we just need to verify your email address to ensure the security of your account.
+    
+      Please click on the following link to activate your account : ${url}
+      Thank you for choosing [Your Company]. We can't wait for you to explore all that awaits you!
+      
+      Best regards,
+      
+      Xticket`;
 
-      emailSender.sendEmail(email, "confirmation email", emailText);
+      emailSender.sendEmail(email, "Activate Your Account - Email Verification", emailText);
     } catch (err) {
       if (!err.statusCode) {
         err.statusCode = 500;
@@ -395,7 +406,7 @@ exports.updatePassword = async function (req, res, next) {
   try {
     const { id } = req.customer;
     const { currentPassword, newPassword, confirmNewPassword } = req.body;
-
+    
     const customer = await Customers.findById(id);
 
     if (!customer) {
@@ -432,4 +443,99 @@ exports.updatePassword = async function (req, res, next) {
     next(err);
   }
 };
+
+exports.forgetPassword = async function (req, res, next) {
+  try {
+    const customer = await Customers.findOne({ email: req.body.email });
+    if (!customer) {
+      return res.status(404).send({
+        message:
+          "Oops! It seems like there's no account associated with the provided email address. Please make sure it's spelled correctly or consider signing up to join our awesome community!",
+      });
+    }
+    const token = crypto.randomBytes(32).toString("hex");
+    console.log(token)
+   
+    customer.passwordResetToken= token,
+    customer.passwordResetExpires = Date.now() + (60 * 1000 * 10);
+      await customer.save()
+    const url = `http://localhost:3001/resetpassword/${token}`;
+
+    const emailText = `Hello ${customer.firstName},
+    
+    We hope this message finds you well. It seems like you've requested to reset your password for your Xticket account.
+    
+    To reset your password, simply click on the following link:${url}
+
+    
+    If you didn't request this password reset, please ignore this email. Your account is secure, and no action is required.
+    
+    If you continue to experience issues or have any questions, feel free to reach out to our support team at xticket.serviceclient@gmail.com.
+    
+    Thank you for being a part of our community!
+    
+    Best regards,
+    Xticket Team`;
+
+    emailSender.sendEmail(customer.email, "Reset Your Password - Xticket", emailText);
+
+    res.status(200).send({ message: "Password reset email sent! Please check your inbox!" });
+  } catch (error) {
+    res.status(500).send({ message: "Something wrong! Please try again." });
+  }
+};
+exports.resetPassword = async function (req, res, next) {
+  const {token } = req.params;
+  const {newPassword,confirmNewPassword} = req.body;
+
+  const customer = await Customers.findOne({passwordResetToken:token})
+
+  if (!customer){
+     res.status(200).send({status:"error",message:'Customer not found'})
+    return 
+  }
+
+  if(customer.passwordResetExpires  - Date.now() < 0 ) {
+     res.status(200).send({status:"error",message:"token has expired"})
+     return 
+  }
+
+  
+  if(newPassword != confirmNewPassword){
+     res.status(200).send({status:"error",message : 'Password must match confirm Password' })
+     console.log('inside')
+     return 
+    }
+
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(newPassword, salt);
+  customer.password = hashedPassword;
+  customer.passwordResetExpires = Date.now() - (60 * 1000 * 10)
+  await customer.save();
+
+
+
+  res.status(200).json({status:"success", message:"the new password has been set succesfully " });
+
+}
+
+exports.verifytoken = async function (req,res,next ) {
+  
+  const {token } = req.params;
+
+  const customer = await Customers.findOne({passwordResetToken:token})
+
+
+  if (!customer){
+    return res.status(200).send({status:"error",message:'Customer not found'})
+  }
+  if(customer.passwordResetExpires  - Date.now() < 0 ) {
+    res.status(200).send({status:"error",message:"token has expired"})
+  }
+
+  res.status(200).send({status:"success",message:"token valid"})
+
+}
+
+
 
