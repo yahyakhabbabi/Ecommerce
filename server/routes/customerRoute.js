@@ -25,19 +25,19 @@ router.get('/'/* ,verifyJWT(JWT_SECRET),isAdminOrManager */,(req,res,next)=>{
         customerController.getAllCustomer(req, res, next);
     }
 });
+
 router.get('/:id([0-9a-fA-F]{24})'/* ,getCustomerValidator,verifyJWT(JWT_SECRET),isAdminOrManager */,customerController.getCustomerById);
 router.put('/:id'/* ,putUpdateCustomer,verifyJWT(JWT_SECRET),isAdminOrManager */,customerController.updateCustomer);
 router.delete('/delete',verifyJWT(JWT_SECRET_customer),customerController.deleteCustomer);
 router.get('/profile',verifyJWT(JWT_SECRET_customer),customerController.customerProfile);
 router.patch('/profile/update',verifyJWT(JWT_SECRET_customer),upload.single('customer_image'),customerController.updateDataCustomer);
-
-
-
-
 router.put('/profile/updatepassword', verifyJWT(JWT_SECRET_customer), customerController.updatePassword);
-
-
 router.post("/refresh",customerController.refresh);
-router.use('/:customerId/orders',orderRoute)
+router.use('/:customerId/orders',orderRoute);
+router.post('/forgetpassword',customerController.forgetPassword);
+router.post('/helo',customerController.forgetPassword);
+
+router.get('/resetpassword/:token',customerController.verifytoken)
+router.post('/resetpassword/:token',customerController.resetPassword)
 
 module.exports=router;

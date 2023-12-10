@@ -17,7 +17,7 @@ const customersSchema = new mongoose.Schema(
       unique: [true, "email should be unique"],
       required: [true, "Please provide a unique email"],
     },
-
+    address:{type: String},
     password: { type: String, required: [true, "Please provide a password"] },
 
     last_login: { type: Date, default: Date.now() },
@@ -25,7 +25,13 @@ const customersSchema = new mongoose.Schema(
     valid_account: { type: Boolean, default: false },
 
     active: { type: Boolean, default: true },
+
+    passwordResetToken:{type:String, default:null },
+    
+    passwordResetExpires:{type:Date, default:null}
   },
+
+
   { timestamps: true }
 );
 module.exports = { Customers: mongoose.model("Customers", customersSchema) };
