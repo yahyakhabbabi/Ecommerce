@@ -35,9 +35,10 @@ router.put('/profile/updatepassword', verifyJWT(JWT_SECRET_customer), customerCo
 router.post("/refresh",customerController.refresh);
 router.use('/:customerId/orders',orderRoute);
 router.post('/forgetpassword',customerController.forgetPassword);
-router.post('/helo',customerController.forgetPassword);
+router.get('/resetpassword/:token',customerController.verifytoken);
+router.post('/resetpassword/:token',customerController.resetPassword);
 
-router.get('/resetpassword/:token',customerController.verifytoken)
-router.post('/resetpassword/:token',customerController.resetPassword)
+
+router.post('/profile/update/image',verifyJWT(JWT_SECRET_customer),upload.single('customer_image'),customerController.updateCustomerImage)
 
 module.exports=router;

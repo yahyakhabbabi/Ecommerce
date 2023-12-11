@@ -8,6 +8,7 @@ const {
   Refresh_JWT_SECRET_customer,
 } = require("../config/env");
 const crypto = require("crypto");
+const path = require('path');
 
 exports.login = async function (req, res, next) {
   console.log("m in login");
@@ -328,7 +329,7 @@ exports.updateDataCustomer = async function (req, res, next) {
     }
 
     const body = req.body;
-    const customer_image = req.file ? req.file.path : null;
+    
 
     // Fetch the existing customer
     const customer = await Customers.findOne({ _id: id });
@@ -352,7 +353,7 @@ exports.updateDataCustomer = async function (req, res, next) {
     }
 
     // Update customer data, including the image path
-    const updateData = { ...body, customer_image, _id: id };
+    const updateData = { ...body,_id: id };
 
     // Update the customer document
     await Customers.updateOne({ _id: id }, { $set: updateData });
@@ -484,6 +485,23 @@ exports.forgetPassword = async function (req, res, next) {
     res.status(500).send({ message: "Something wrong! Please try again." });
   }
 };
+exports.verifytoken = async function (req,res,next ) {
+  
+  const {token } = req.params;
+
+  const customer = await Customers.findOne({passwordResetToken:token})
+
+
+  if (!customer){
+    return res.status(200).send({status:"error",message:'Customer not found'})
+  }
+  if(customer.passwordResetExpires  - Date.now() < 0 ) {
+    res.status(200).send({status:"error",message:"token has expired"})
+  }
+
+  res.status(200).send({status:"success",message:"token valid"})
+
+}
 exports.resetPassword = async function (req, res, next) {
   const {token } = req.params;
   const {newPassword,confirmNewPassword} = req.body;
@@ -513,29 +531,37 @@ exports.resetPassword = async function (req, res, next) {
   customer.passwordResetExpires = Date.now() - (60 * 1000 * 10)
   await customer.save();
 
-
-
   res.status(200).json({status:"success", message:"the new password has been set succesfully " });
-
-}
-
-exports.verifytoken = async function (req,res,next ) {
-  
-  const {token } = req.params;
-
-  const customer = await Customers.findOne({passwordResetToken:token})
-
-
-  if (!customer){
-    return res.status(200).send({status:"error",message:'Customer not found'})
-  }
-  if(customer.passwordResetExpires  - Date.now() < 0 ) {
-    res.status(200).send({status:"error",message:"token has expired"})
-  }
-
-  res.status(200).send({status:"success",message:"token valid"})
-
 }
 
 
+// exports.updateCustomerImage = async function (req, res, next) {
+//   console.log(req.file);
 
+//     // All good
+//     res.sendStatus(200); 
+// }
+exports.updateCustomerImage = async function (req, res, next) {
+  try {
+    const { id } = req.customer;
+    const customer_image = req.file ? req.file.path : null;
+    const customer = await Customers.findOne({ _id: id });
+
+    if (!customer) {
+      const error = new Error("Customer not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    // Update the customer document
+    await Customers.findByIdAndUpdate(id, { customer_image });
+console.log("hi")
+    res.status(200).json("Profile image updated successfully");
+  } catch (err) {
+    if (!err.statusCode) {
+      const error = new Error("Something went wrong try again");
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
