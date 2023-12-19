@@ -238,7 +238,7 @@ exports.allProducts = async function (req, res, next) {
   console.log("GET / handler in productRoutes reached");
   try {
     const page = req.query.page * 1 || 1;
-    const limit = req.query.limit * 1 || 10;
+    const limit = req.query.limit * 1 || 20;
     const skip = (page - 1) * limit;
 
     // Nested route
