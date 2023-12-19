@@ -222,6 +222,7 @@ export default function ProductsTable() {
             },
 
             { field: "quantity", label: "quantity" },
+            { field: "event_date", label: "event_date",type:"date" },
             {field:"product_image",label:"product_image",type:"image"}
           ]}
           onDelete={deleteProduct}

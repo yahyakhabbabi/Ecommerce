@@ -13,6 +13,7 @@ import { useNavigate,Link } from 'react-router-dom';
 import { useBearStore } from './appStore';
 import AuthContext from '../context/AuthContext'; 
 import { Avatar,  Tooltip } from '@mui/material';
+import Logodashboard from "../assets/images/Logodashboard.png"
 
 const AppBar = styled(MuiAppBar, {
 })(({ theme }) => ({
@@ -64,7 +65,10 @@ export default function Navbar() {
             component="div"
             sx={{ display: { xs: 'none', sm: 'block' } }}
           >
-            Logo
+            <img src={Logodashboard}
+            alt='Logo'
+            height={40}
+            width={100}/>
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>

@@ -27,7 +27,7 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
 export default function PieChartComponent() {
   return (
     <div>
-      <ResponsiveContainer width={250} height={200}>
+      <ResponsiveContainer width={200} height={160}>
         <PieChart>
           <Pie
             data={data}

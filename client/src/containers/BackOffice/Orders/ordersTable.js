@@ -155,7 +155,7 @@ export default function OrdersTable() {
           columns={[
             { field: "firstName", label: "First Name" },
             { field: "lastName", label: "Last Name" },
-            { field: "order_items", label: "Order Items" },
+            // { field: "order_items", label: "Order Items" },
             { field: "order_date", label: "Order Date" },
             { field: "cart_total_price", label: "Cart Total Price" },
             { field: "status", label: "Status" },

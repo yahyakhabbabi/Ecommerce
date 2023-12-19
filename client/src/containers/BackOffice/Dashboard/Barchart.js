@@ -3,7 +3,7 @@ import { LineChart, Line, ResponsiveContainer, Tooltip } from 'recharts';
 import './dash.css';
 
 
-export default function LineChartComponent() {
+export default function Barchart() {
   const data = [
     {
       name: 'Page A',

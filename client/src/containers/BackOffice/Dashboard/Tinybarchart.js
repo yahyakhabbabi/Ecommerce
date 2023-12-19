@@ -48,7 +48,7 @@ export default function Tinybarchart() {
   ];
 
   return (
-    <ResponsiveContainer width="100%" height={200}>
+    <ResponsiveContainer width="100%" height={150}>
       <BarChart data={data}>
         <Tooltip 
         contentStyle={{background:"#2a3447",borderRadius:"5px"}}

@@ -11,7 +11,7 @@ import {
   FormControl,
   InputLabel,
   MenuItem,
-  Select
+  Select,
 } from "@mui/material";
 import { Box } from "@mui/system";
 
@@ -46,7 +46,9 @@ export default function Modals({ modal, toggle, save, fields, dialogTitle }) {
   return (
     <Dialog open={modal} onClose={toggle}>
       <DialogTitle>
-        <Box sx={{ fontSize: "20px", fontWeight: "bold", marginBottom: "10px" }}>
+        <Box
+          sx={{ fontSize: "20px", fontWeight: "bold", marginBottom: "10px" }}
+        >
           {dialogTitle}
         </Box>
       </DialogTitle>
@@ -56,7 +58,11 @@ export default function Modals({ modal, toggle, save, fields, dialogTitle }) {
         <form>
           <Grid container spacing={3}>
             {fields.map((field) => (
-              <Grid item xs={fields.length === 1 ? 12 : fields.length <= 8 ? 6 : 4} key={field.field}>
+              <Grid
+                item
+                xs={fields.length === 1 ? 12 : fields.length <= 8 ? 6 : 4}
+                key={field.field}
+              >
                 {field.type === "email" ? (
                   <TextField
                     label={field.label}
@@ -84,6 +90,33 @@ export default function Modals({ modal, toggle, save, fields, dialogTitle }) {
                     }}
                     type="password"
                   />
+                ) : field.type === "date" ? (
+                  // Handle password input
+                  <TextField
+                    label={field.label}
+                    variant="outlined"
+                    value={formValues[field.field]}
+                    onChange={handleChange}
+                    name={field.field}
+                    fullWidth
+                    style={{
+                      marginBottom: "16px",
+                    }}
+                    type="date"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    InputProps={{
+                      style: {
+                        // Add your custom styles for the date input here
+                        // For example:
+                        color: "blue",
+                        backgroundColor: "lightgray",
+                        borderRadius: "5px",
+                        // ...other styles
+                      },
+                    }}
+                  />
                 ) : field.type === "Booleen" ? (
                   <FormControl fullWidth>
                     <InputLabel>{field.label}</InputLabel>
@@ -91,19 +124,18 @@ export default function Modals({ modal, toggle, save, fields, dialogTitle }) {
                       value={formValues[field.field]}
                       onChange={handleChange}
                       name={field.field}
-                      variant="outlined" 
-                      sx={{ border: "1px solid #ccc", borderRadius: "4px" }} 
+                      variant="outlined"
+                      sx={{ border: "1px solid #ccc", borderRadius: "4px" }}
                     >
                       <MenuItem value={field.option1}>{field.option1}</MenuItem>
                       <MenuItem value={field.option2}>{field.option2}</MenuItem>
                     </Select>
                   </FormControl>
-                ):field.type === "image" ? (
+                ) : field.type === "image" ? (
                   <input
                     accept="image/*"
                     type="file"
                     onChange={(e) => handleImageChange(e)}
-                   
                     id="imageInput"
                   />
                 ) : (

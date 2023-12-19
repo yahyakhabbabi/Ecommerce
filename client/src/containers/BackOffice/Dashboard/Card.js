@@ -15,10 +15,12 @@ export default function CustomCard({
   return (
     <Card
       sx={{
-        maxWidth: 700,
+        maxWidth: 500,
         height: height,
         background: gradient,
-        color:colord
+        color: colord,
+        boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+        position: "relative", // Make the card position relative
       }}
     >
       <CardContent
@@ -27,21 +29,23 @@ export default function CustomCard({
           flexDirection: "column",
           justifyContent: "space-between",
           height: "100%",
+          padding: "8px",
+          position: "relative", // Ensure content positioning is relative to the card
         }}
       >
-        <div className="flexCard">
-          <Typography variant="body2">{content}</Typography>
-            <Typography gutterBottom component="div">
-              {title}
-            </Typography>
-            <Typography variant="body2">{content2}</Typography>
-         
-        </div>
-        <div style={{ flex: 1 }}>
-          <Typography variant="body2" color="text.secondary">
-            {chartComponent}
+        <div style={{ display: "flex", marginBottom: "10px" }}>
+          <Typography variant="h5" style={{ marginRight: "10px" }}>
+            {title}
           </Typography>
+          <div style={{ position: "absolute", left: "250px" }}> {/* Adjust left position as needed */}
+            <Typography variant="body1">
+              {content}
+            </Typography>
+          </div>
         </div>
+        <Typography variant="body1" style={{ marginTop: "10px", fontSize: "26px" }}>
+          {content2}
+        </Typography>
       </CardContent>
     </Card>
   );

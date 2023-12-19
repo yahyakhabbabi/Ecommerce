@@ -219,17 +219,19 @@ const DataTable = ({
                           Edit
                         </Button>
                       </Link>
-                      <Button
-                        variant="outlined"
-                        startIcon={<DeleteIcon />}
-                        sx={{ color: "darkred" }}
-                        onClick={() => {
-                          setDeleteUserId(item._id);
-                          setIsDeleteModalOpen(true);
-                        }}
-                      >
-                        Delete
-                      </Button>
+                      {tableType !== "order" && (
+                        <Button
+                          variant="outlined"
+                          startIcon={<DeleteIcon />}
+                          sx={{ color: "darkred" }}
+                          onClick={() => {
+                            setDeleteUserId(item._id);
+                            setIsDeleteModalOpen(true);
+                          }}
+                        >
+                          Delete
+                        </Button>
+                      )}
                     </Stack>
                   </TableCell>
                 </TableRow>
